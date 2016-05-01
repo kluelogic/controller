@@ -91,6 +91,7 @@ CLIDict_Def( lcdCLIDict, "ST LCD Module Commands" ) = {
 };
 
 
+#include "my_lcd_scan.h"
 
 // ----- Interrupt Functions -----
 
@@ -289,6 +290,7 @@ inline void LCD_setup()
 
 	// Run LCD intialization sequence
 	LCD_initialize();
+#include "my_LCD_setup.c"
 
 	// Write default image to LCD
 	for ( uint8_t page = 0; page < LCD_TOTAL_VISIBLE_PAGES; page++ )
@@ -650,3 +652,4 @@ void cliFunc_lcdDisp( char* args )
 	}
 }
 
+#include "my_lcd_scan.c"

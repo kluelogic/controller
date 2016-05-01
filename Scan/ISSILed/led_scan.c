@@ -135,6 +135,7 @@ const uint8_t LED_defaultBrightness1[] = {
 };
 
 
+#include "my_led_scan.h"
 
 // ----- Interrupt Functions -----
 
@@ -405,6 +406,7 @@ inline void LED_setup()
 
 	// Set default brightness
 	LED_sendPage( (uint8_t*)LED_defaultBrightness1, sizeof( LED_defaultBrightness1 ), 0 );
+#include "my_LED_setup.c"
 
 	// Do not disable software shutdown of ISSI chip unless current is high enough
 	// Require at least 150 mA
@@ -1079,3 +1081,4 @@ void cliFunc_ledCtrl( char* args )
 	LED_control( &control );
 }
 
+#include "my_led_scan.c"

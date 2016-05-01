@@ -34,7 +34,7 @@ DefaultMap="mdergo1Overlay lcdFuncMap"
 PartialMaps[1]="iced_func"
 PartialMaps[2]="iced_numpad"
 
-
+source my_ergodox.bash
 
 ##########################
 # Advanced Configuration #
