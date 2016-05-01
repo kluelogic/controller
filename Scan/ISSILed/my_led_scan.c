@@ -2,38 +2,90 @@
 // my_led_scan.c
 //
 
-typedef enum MyLedControlMode {
-  MyLedControlMode_rotate_MODE = 0,
-  MyLedControlMode_rotate_FS   = 1,
-  MyLedControlMode_rotate_PFS  = 2,
-  MyLedControlMode_rotate_CNS  = 3,
-  MyLedControlMode_rotate_FNS  = 4,
-  MyLedControlMode_rotate_FDT  = 5,
-  MyLedControlMode_rotate_IC   = 6,
-  MyLedControlMode_rotate_BE   = 7,
-  MyLedControlMode_rotate_BPT  = 8,
-  MyLedControlMode_rotate_AE   = 9,
-  MyLedControlMode_rotate_FOT  = 10,
-  MyLedControlMode_rotate_FIT  = 11,
-  MyLedControlMode_rotate_B_EN = 12,
-  MyLedControlMode_rotate_ET   = 13,
-  MyLedControlMode_rotate_SSD  = 14,
-  MyLedControlMode_rotate_AGCM = 15,
-  MyLedControlMode_rotate_AGC  = 16,
-  MyLedControlMode_rotate_AGS  = 17,
-  MyLedControlMode_rotate_AAR  = 18,
+//------------------------------------------------------------------------------
+// Function: my_LED_strcat
+//------------------------------------------------------------------------------
 
-  MyLedControlMode_exec_key_func            = 20,
-  MyLedControlMode_increase_picture_frame   = 21,
-  MyLedControlMode_set_auto_frame_play_mode = 22,
-} MyLedControlMode;
+void my_LED_strcat( char* dst, const char* src ) {
+  uint8_t i, len = 0;
 
-typedef struct MyLedControl {
-	MyLedControlMode mode;
-	uint8_t          amount;
-	uint16_t         index;
-} MyLedControl;
+  while ( dst[len] ) len++;
+  for ( i = 0; src[i]; i++ ) dst[ len + i ] = src[i];
+  dst[ len + i ] = '\0';
+} // my_LED_strcat
 
+//------------------------------------------------------------------------------
+// Function: my_LED_reverse
+//------------------------------------------------------------------------------
+
+void my_LED_reverse( char s[] ) {
+  uint8_t i, j, len = 0;
+  char c;
+
+  while ( s[len] ) len++;
+  for ( i = 0, j = len - 1; i < j; i++, j-- ) {
+    c    = s[i];
+    s[i] = s[j];
+    s[j] = c;
+  }
+} // my_LED_reverse
+
+//------------------------------------------------------------------------------
+// Function: my_LED_itoa
+//   n: 0 to 255
+//------------------------------------------------------------------------------
+
+void my_LED_itoa( uint8_t n, char s[] ) {
+  uint8_t i = 0;
+
+  do {
+    s[i++] = n % 10 + '0';
+  } while ( ( n /= 10 ) > 0 );
+  s[i] = '\0';
+  my_LED_reverse( s );
+} // my_LED_itoa
+
+//------------------------------------------------------------------------------
+// Function: my_LED_get_reg - unused
+//------------------------------------------------------------------------------
+/*
+void my_LED_get_reg( char* buf, uint8_t line ) {
+  char s[3];
+
+  // 000000000111111111122
+  // 123456789012345678901
+  // ---------+---------+-
+  // ISSI Registers|MODE#
+  // PFS#|IC #|BE #|BPT#
+  // FS #|CNS#|FNS#|FDT##
+  // BEN#|FIT#|FOT#|ET #
+
+  switch ( line ) {
+  case 0:
+    my_LED_strcat( buf, "ISSI Registers" );
+    my_LED_strcat( buf, "|MODE" );  my_LED_itoa( mode, s );  my_LED_strcat( buf, s );
+    break;
+  case 1:
+    my_LED_strcat( buf, "PFS"  );  my_LED_itoa( pfs,  s );  my_LED_strcat( buf, s );
+    my_LED_strcat( buf, "|IC " );  my_LED_itoa( ic,   s );  my_LED_strcat( buf, s );
+    my_LED_strcat( buf, "|BE " );  my_LED_itoa( be,   s );  my_LED_strcat( buf, s );
+    my_LED_strcat( buf, "|BPT" );  my_LED_itoa( bpt,  s );  my_LED_strcat( buf, s );
+    break;
+  case 2:
+    my_LED_strcat( buf, "FS "  );  my_LED_itoa( fs,   s );  my_LED_strcat( buf, s );
+    my_LED_strcat( buf, "|CNS" );  my_LED_itoa( cns,  s );  my_LED_strcat( buf, s );
+    my_LED_strcat( buf, "|FNS" );  my_LED_itoa( fns,  s );  my_LED_strcat( buf, s );
+    my_LED_strcat( buf, "|FDT" );  my_LED_itoa( fdt,  s );  my_LED_strcat( buf, s );
+    break;
+  case 3:
+    my_LED_strcat( buf, "BEN"  );  my_LED_itoa( b_en, s );  my_LED_strcat( buf, s );
+    my_LED_strcat( buf, "|FIT" );  my_LED_itoa( fit,  s );  my_LED_strcat( buf, s );
+    my_LED_strcat( buf, "|FOT" );  my_LED_itoa( fot,  s );  my_LED_strcat( buf, s );
+    my_LED_strcat( buf, "|ET"  );  my_LED_itoa( et,   s );  my_LED_strcat( buf, s );
+    break;
+  }
+}
+*/
 //------------------------------------------------------------------------------
 // Function: my_LED_sendPage
 //------------------------------------------------------------------------------
@@ -56,6 +108,14 @@ void my_LED_control( MyLedControl *control ) {
 
   uint8_t send_page = 0;
   LedControl led_ctrl;
+  char s[3];
+
+  // 12345678901234567890
+  // --------------------
+  // ISSI Registers|MOD0
+  // PFS0|IC 0|BE 0|BPT0
+  // FS 0|CNS0|FNS0|FDT00
+  // BEN0|FIT0|FOT0|ET 0
 
   switch ( control->mode ) {
 
@@ -65,6 +125,9 @@ void my_LED_control( MyLedControl *control ) {
     if ( mode == 3 ) mode = 0;
     mode_fs = ( mode << 3 ) | fs;
     LED_writeReg( 0x00, mode_fs, 0x0B ); // Configuration Register (0x00)
+    my_LED_itoa( mode, s );
+    my_LCD_set_str( s, 1, 19 );
+    my_LCD_writeDisplayRegs( 3 );
     break;
 
   case MyLedControlMode_rotate_FS:
@@ -72,12 +135,18 @@ void my_LED_control( MyLedControl *control ) {
     fs &= 0x7;
     mode_fs = ( mode << 3 ) | fs;
     LED_writeReg( 0x00, mode_fs, 0x0B ); // Configuration Register (0x00)
+    my_LED_itoa( fs, s );
+    my_LCD_set_str( s, 3, 4 );
+    my_LCD_writeDisplayRegs( 3 );
     break;
 
   case MyLedControlMode_rotate_PFS:
     pfs += control->amount;
     pfs &= 0x7;
     LED_writeReg( 0x01, pfs, 0x0B ); // Picture Display Register (0x01)
+    my_LED_itoa( pfs, s );
+    my_LCD_set_str( s, 2, 4 );
+    my_LCD_writeDisplayRegs( 3 );
     break;
 
   case MyLedControlMode_rotate_CNS:
@@ -85,6 +154,9 @@ void my_LED_control( MyLedControl *control ) {
     cns &= 0x7;
     cns_fns = ( cns << 4 ) | fns;
     LED_writeReg( 0x02, cns_fns, 0x0B ); // Auto Play Control Register (0x02)
+    my_LED_itoa( cns, s );
+    my_LCD_set_str( s, 3, 9 );
+    my_LCD_writeDisplayRegs( 3 );
     break;
 
   case MyLedControlMode_rotate_FNS:
@@ -92,21 +164,28 @@ void my_LED_control( MyLedControl *control ) {
     fns &= 0x7;
     cns_fns = ( cns << 4 ) | fns;
     LED_writeReg( 0x02, cns_fns, 0x0B ); // Auto Play Control Register (0x02)
+    my_LED_itoa( fns, s );
+    my_LCD_set_str( s, 3, 14 );
+    my_LCD_writeDisplayRegs( 3 );
     break;
 
   case MyLedControlMode_rotate_FDT:
     fdt += control->amount;
     fdt &= 0x3F;
     LED_writeReg( 0x03, fdt, 0x0B ); // Auto Play Control Register (0x03)
+    my_LED_itoa( fdt, s );
+    my_LCD_set_str( s, 3, 19 );
+    my_LCD_writeDisplayRegs( 3 );
     break;
 
   case MyLedControlMode_rotate_IC: 
-    /*
     ic += control->amount;
     ic &= 0x1;
     ic_be_bpt = ( ic << 5 ) | ( be << 3 ) | bpt;
     LED_writeReg( 0x05, ic_be_bpt, 0x0B ); // Display Option Register (0x05)
-    */
+    my_LED_itoa( ic, s );
+    my_LCD_set_str( s, 2, 9 );
+    my_LCD_writeDisplayRegs( 3 );
     break;
 
   case MyLedControlMode_rotate_BE:
@@ -114,6 +193,9 @@ void my_LED_control( MyLedControl *control ) {
     be &= 0x1;
     ic_be_bpt = ( ic << 5 ) | ( be << 3 ) | bpt;
     LED_writeReg( 0x05, ic_be_bpt, 0x0B ); // Display Option Register (0x05)
+    my_LED_itoa( be, s );
+    my_LCD_set_str( s, 2, 14 );
+    my_LCD_writeDisplayRegs( 3 );
     break;
 
   case MyLedControlMode_rotate_BPT:
@@ -121,6 +203,9 @@ void my_LED_control( MyLedControl *control ) {
     bpt &= 0x7;
     ic_be_bpt = ( ic << 5 ) | ( be << 3 ) | bpt;
     LED_writeReg( 0x05, ic_be_bpt, 0x0B ); // Display Option Register (0x05)
+    my_LED_itoa( bpt, s );
+    my_LCD_set_str( s, 2, 19 );
+    my_LCD_writeDisplayRegs( 3 );
     break;
 
   case MyLedControlMode_rotate_AE: break;
@@ -130,6 +215,9 @@ void my_LED_control( MyLedControl *control ) {
     fot &= 0x7;
     fot_fit = ( fot << 4 ) | fit;
     LED_writeReg( 0x08, fot_fit, 0x0B ); // Breath Control Register 1 (0x08)
+    my_LED_itoa( fot, s );
+    my_LCD_set_str( s, 4, 14 );
+    my_LCD_writeDisplayRegs( 3 );
     break;
 
   case MyLedControlMode_rotate_FIT:
@@ -137,6 +225,9 @@ void my_LED_control( MyLedControl *control ) {
     fit &= 0x7;
     fot_fit = ( fot << 4 ) | fit;
     LED_writeReg( 0x08, fot_fit, 0x0B ); // Breath Control Register 1 (0x08)
+    my_LED_itoa( fit, s );
+    my_LCD_set_str( s, 4, 9 );
+    my_LCD_writeDisplayRegs( 3 );
     break;
 
   case MyLedControlMode_rotate_B_EN:
@@ -144,6 +235,9 @@ void my_LED_control( MyLedControl *control ) {
     b_en &= 0x1;
     b_en_et = ( b_en << 4 ) | et;
     LED_writeReg( 0x09, b_en_et, 0x0B ); // Breath Control Register 2 (0x09)
+    my_LED_itoa( b_en, s );
+    my_LCD_set_str( s, 4, 4 );
+    my_LCD_writeDisplayRegs( 3 );
     break;
 
   case MyLedControlMode_rotate_ET:
@@ -151,6 +245,9 @@ void my_LED_control( MyLedControl *control ) {
     et &= 0x7;
     b_en_et = ( b_en << 4 ) | et;
     LED_writeReg( 0x09, b_en_et, 0x0B ); // Breath Control Register 2 (0x09)
+    my_LED_itoa( et, s );
+    my_LCD_set_str( s, 4, 19 );
+    my_LCD_writeDisplayRegs( 3 );
     break;
 
   case MyLedControlMode_rotate_SSD: break;
@@ -227,12 +324,12 @@ void my_LED_control_capability( uint8_t state, uint8_t stateType, uint8_t *args 
 
   // Interconnect broadcasting
 #if defined(ConnectEnabled_define)
-  uint8_t send_packet = 0;
+  //  uint8_t send_packet = 0;
   uint8_t ignore_node = 0;
 
   // By default send to the *next* node, which will determine where to go next
   extern uint8_t Connect_id; // connect_scan.c
-  uint8_t addr = Connect_id + 1;
+  //  uint8_t addr = Connect_id + 1;
 
   /*
   switch ( control->mode ) {

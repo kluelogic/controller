@@ -136,6 +136,7 @@ const uint8_t LED_defaultBrightness1[] = {
 
 
 #include "my_led_scan.h"
+#include "my_led_scan_decl.c"
 
 // ----- Interrupt Functions -----
 

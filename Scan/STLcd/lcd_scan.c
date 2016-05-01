@@ -92,6 +92,7 @@ CLIDict_Def( lcdCLIDict, "ST LCD Module Commands" ) = {
 
 
 #include "my_lcd_scan.h"
+#include "my_lcd_scan_decl.c"
 
 // ----- Interrupt Functions -----
 
