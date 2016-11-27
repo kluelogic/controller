@@ -107,7 +107,7 @@ void my_LED_control( MyLedControl *control ) {
   uint8_t b_en_et;
 
   uint8_t send_page = 0;
-  LedControl led_ctrl;
+  //  LedControl led_ctrl;
   char s[3];
 
   // 12345678901234567890
@@ -255,12 +255,19 @@ void my_LED_control( MyLedControl *control ) {
   case MyLedControlMode_rotate_AGC: break;
   case MyLedControlMode_rotate_AGS: break;
   case MyLedControlMode_rotate_AAR: break;
-
+    /*
   case MyLedControlMode_exec_key_func:
     led_ctrl.mode   = LedControlMode_brightness_increase;
     led_ctrl.amount = 0x80;
     led_ctrl.index  = control->index;
     LED_control( &led_ctrl );
+    break;
+    */
+
+  case MyLedControlMode_set_picture_frame:
+    pfs  = control->amount;
+    pfs &= 0x7; // 3-bits
+    LED_writeReg( 0x01, pfs, 0x0B ); // Picture Display Register
     break;
 
   case MyLedControlMode_increase_picture_frame:

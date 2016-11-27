@@ -31,7 +31,7 @@ typedef enum MyLedControlMode {
   MyLedControlMode_rotate_AGS  = 17,
   MyLedControlMode_rotate_AAR  = 18,
 
-  MyLedControlMode_exec_key_func            = 20,
+  MyLedControlMode_set_picture_frame        = 20,
   MyLedControlMode_increase_picture_frame   = 21,
   MyLedControlMode_set_auto_frame_play_mode = 22,
 } MyLedControlMode;
