@@ -10,13 +10,14 @@ my_LED_sendPage( (uint8_t*)LED_ledEnableMask1, sizeof( LED_ledEnableMask1 ), 5 )
 my_LED_sendPage( (uint8_t*)LED_ledEnableMask1, sizeof( LED_ledEnableMask1 ), 6 );
 my_LED_sendPage( (uint8_t*)LED_ledEnableMask1, sizeof( LED_ledEnableMask1 ), 7 );
 
-my_LED_sendPage( (uint8_t*)LED_defaultBrightness2, sizeof( LED_defaultBrightness2 ), 1 );
-my_LED_sendPage( (uint8_t*)LED_defaultBrightness3, sizeof( LED_defaultBrightness3 ), 2 );
-my_LED_sendPage( (uint8_t*)LED_defaultBrightness4, sizeof( LED_defaultBrightness4 ), 3 );
-my_LED_sendPage( (uint8_t*)LED_defaultBrightness5, sizeof( LED_defaultBrightness5 ), 4 );
-my_LED_sendPage( (uint8_t*)LED_defaultBrightness6, sizeof( LED_defaultBrightness6 ), 5 );
-my_LED_sendPage( (uint8_t*)LED_defaultBrightness7, sizeof( LED_defaultBrightness7 ), 6 );
-my_LED_sendPage( (uint8_t*)LED_defaultBrightness8, sizeof( LED_defaultBrightness8 ), 7 );
+//my_LED_sendPage( (uint8_t*)My_LED_Brightness0, sizeof( My_LED_Brightness0 ), 0 );
+my_LED_sendPage( (uint8_t*)My_LED_Brightness1, sizeof( My_LED_Brightness1 ), 1 );
+my_LED_sendPage( (uint8_t*)My_LED_Brightness2, sizeof( My_LED_Brightness2 ), 2 );
+my_LED_sendPage( (uint8_t*)My_LED_Brightness3, sizeof( My_LED_Brightness3 ), 3 );
+my_LED_sendPage( (uint8_t*)My_LED_Brightness4, sizeof( My_LED_Brightness4 ), 4 );
+my_LED_sendPage( (uint8_t*)My_LED_Brightness5, sizeof( My_LED_Brightness5 ), 5 );
+my_LED_sendPage( (uint8_t*)My_LED_Brightness6, sizeof( My_LED_Brightness6 ), 6 );
+my_LED_sendPage( (uint8_t*)My_LED_Brightness7, sizeof( My_LED_Brightness7 ), 7 );
 
 mode = 0; // Display Mode
 fs   = 0; // Frame Start
@@ -37,3 +38,5 @@ agcm = 0; // AGC Mode
 agc  = 0; // AGC Enable
 ags  = 0; // Audio Gain Selection
 aar  = 0; // Audio ADC Rate
+
+demo_id = 0;

@@ -96,6 +96,57 @@ void my_LED_sendPage( uint8_t *buffer, uint8_t len, uint8_t page ) {
 }
 
 //------------------------------------------------------------------------------
+// Function: my_LED_set_all
+//------------------------------------------------------------------------------
+
+void my_LED_set_all( uint8_t amount ) {
+  LedControl led_ctrl;
+
+  led_ctrl.mode   = LedControlMode_brightness_set_all;
+  led_ctrl.amount = amount;
+  led_ctrl.index  = 0x00; // dummy
+  LED_control( &led_ctrl );
+}
+
+//------------------------------------------------------------------------------
+// Function: my_LED_turn_all_on
+//------------------------------------------------------------------------------
+
+void my_LED_turn_all_on() {
+  my_LED_set_all( 0xff );
+}
+
+//------------------------------------------------------------------------------
+// Function: my_LED_turn_all_off
+//------------------------------------------------------------------------------
+
+void my_LED_turn_all_off() {
+  my_LED_set_all( 0x00 );
+}
+
+//------------------------------------------------------------------------------
+// Function: my_LED_play_all_frames
+//------------------------------------------------------------------------------
+
+void my_LED_play_all_frames() {
+  my_LED_sendPage( (uint8_t*)My_LED_Brightness0, sizeof( My_LED_Brightness0 ), 0 ); // restore the page 0
+
+  //     FDT
+  //     <->   ET
+  //     ___  <->  __
+  //    /   \     /
+  // __/     \___/
+  //   <-> <->
+  //   FIT FOT
+
+  LED_writeReg( 0x02, 0x70, 0x0B ); // Auto Play Control Register 1; CNS=7 (7 times), FNS=0 (all)
+  LED_writeReg( 0x03, 0x09, 0x0B ); // Auto Play Control Register 2; FDT=9 (99ms)
+  LED_writeReg( 0x08, 0x00, 0x0B ); // Breath    Control Register 1; FOT=0 (26ms), FIT=0 (26ms)
+  LED_writeReg( 0x09, 0x00, 0x0B ); // Breath    Control Register 2; B_EN=0, ET=0 (3.5ms)
+  LED_writeReg( 0x00, 0x80, 0x0B ); // Configuration     Register; MODE=1 (auto frame), FS=0 (start frame1)
+}
+
+//------------------------------------------------------------------------------
 // Function: my_LED_control
 //------------------------------------------------------------------------------
 
@@ -276,35 +327,24 @@ void my_LED_control( MyLedControl *control ) {
     LED_writeReg( 0x01, pfs, 0x0B ); // Picture Display Register
     break;
 
-  case MyLedControlMode_set_auto_frame_play_mode:
-    mode_fs = control->amount;
-
-    my_LED_sendPage( (uint8_t*)LED_defaultBrightness1, sizeof( LED_defaultBrightness1 ), 0 ); // restore the page 0
-
-    //     FDT
-    //     <->   ET
-    //     ___  <->  __
-    //    /   \     /
-    // __/     \___/
-    //   <-> <->
-    //   FIT FOT
-
-    /*
-      LED_writeReg( 0x02, 0x10, 0x0B );    // Auto Play Control Register 1; CNS=1, FNS=0 (all)
-      LED_writeReg( 0x03, 0x00, 0x0B );    // Auto Play Control Register 2; FDT=0 (704ms)
-      LED_writeReg( 0x08, 0x55, 0x0B );    // Breath    Control Register 1; FOT=5 (832ms), FIT=5 (832ms)
-      LED_writeReg( 0x09, 0x17, 0x0B );    // Breath    Control Register 2; B_EN=1, ET=7 (448ms)
-    */
-    LED_writeReg( 0x02, 0x70, 0x0B );    // Auto Play Control Register 1; CNS=7, FNS=0 (all)
-    LED_writeReg( 0x03, 0x09, 0x0B );    // Auto Play Control Register 2; FDT=9 (99ms)
-    LED_writeReg( 0x08, 0x00, 0x0B );    // Breath    Control Register 1; FOT=0 (26ms), FIT=0 (26ms)
-    LED_writeReg( 0x09, 0x00, 0x0B );    // Breath    Control Register 2; B_EN=0, ET=0 (3.5ms)
-
-    LED_writeReg( 0x00, mode_fs, 0x0B ); // Configuration     Register;
+  case MyLedControlMode_rotate_demo:
+    switch ( demo_id ) {
+    case 0:
+      my_LED_turn_all_off();
+      break;
+    case 1:
+      my_LED_turn_all_on();
+      break;
+    case 2:
+      my_LED_play_all_frames();
+      break;
+    }
+    demo_id += control->amount;
+    demo_id &= 0x3;
     break;
   }
 
-  if ( send_page ) { // Sync LED buffer with ISSI chip buffer
+  if ( send_page ) { // Sync LED buffer with ISSI chip buffer; currently unused
     LED_pageBuffer.i2c_addr = 0xE8; // Chip 1
     LED_pageBuffer.reg_addr = 0x24; // Brightness section
     my_LED_sendPage( (uint8_t*)&LED_pageBuffer, sizeof( LED_Buffer ), 0 );

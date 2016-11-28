@@ -6,40 +6,45 @@
 // Constants
 //------------------------------------------------------------------------------
 
-const uint8_t LED_defaultBrightness2[] = {
+const uint8_t My_LED_Brightness0[] = {
 	0xE8, // I2C address
 	0x24, // Starting register address
-	ISSILedBrightness2_define
+	MyLedBrightness0_define
 };
-const uint8_t LED_defaultBrightness3[] = {
+const uint8_t My_LED_Brightness1[] = {
 	0xE8, // I2C address
 	0x24, // Starting register address
-	ISSILedBrightness3_define
+	MyLedBrightness1_define
 };
-const uint8_t LED_defaultBrightness4[] = {
+const uint8_t My_LED_Brightness2[] = {
 	0xE8, // I2C address
 	0x24, // Starting register address
-	ISSILedBrightness4_define
+	MyLedBrightness2_define
 };
-const uint8_t LED_defaultBrightness5[] = {
+const uint8_t My_LED_Brightness3[] = {
 	0xE8, // I2C address
 	0x24, // Starting register address
-	ISSILedBrightness5_define
+	MyLedBrightness3_define
 };
-const uint8_t LED_defaultBrightness6[] = {
+const uint8_t My_LED_Brightness4[] = {
 	0xE8, // I2C address
 	0x24, // Starting register address
-	ISSILedBrightness6_define
+	MyLedBrightness4_define
 };
-const uint8_t LED_defaultBrightness7[] = {
+const uint8_t My_LED_Brightness5[] = {
 	0xE8, // I2C address
 	0x24, // Starting register address
-	ISSILedBrightness7_define
+	MyLedBrightness5_define
 };
-const uint8_t LED_defaultBrightness8[] = {
+const uint8_t My_LED_Brightness6[] = {
 	0xE8, // I2C address
 	0x24, // Starting register address
-	ISSILedBrightness8_define
+	MyLedBrightness6_define
+};
+const uint8_t My_LED_Brightness7[] = {
+	0xE8, // I2C address
+	0x24, // Starting register address
+	MyLedBrightness7_define
 };
 
 //------------------------------------------------------------------------------
@@ -65,3 +70,5 @@ uint8_t agcm; // AGC Mode
 uint8_t agc;  // AGC Enable
 uint8_t ags;  // Audio Gain Selection
 uint8_t aar;  // Audio ADC Rate
+
+uint8_t demo_id;
