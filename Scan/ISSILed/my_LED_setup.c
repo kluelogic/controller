@@ -2,22 +2,22 @@
 // my_LED_setup.c
 //
 
-my_LED_sendPage( (uint8_t*)LED_ledEnableMask1, sizeof( LED_ledEnableMask1 ), 1 /*page*/ );
-my_LED_sendPage( (uint8_t*)LED_ledEnableMask1, sizeof( LED_ledEnableMask1 ), 2 );
-my_LED_sendPage( (uint8_t*)LED_ledEnableMask1, sizeof( LED_ledEnableMask1 ), 3 );
-my_LED_sendPage( (uint8_t*)LED_ledEnableMask1, sizeof( LED_ledEnableMask1 ), 4 );
-my_LED_sendPage( (uint8_t*)LED_ledEnableMask1, sizeof( LED_ledEnableMask1 ), 5 );
-my_LED_sendPage( (uint8_t*)LED_ledEnableMask1, sizeof( LED_ledEnableMask1 ), 6 );
-my_LED_sendPage( (uint8_t*)LED_ledEnableMask1, sizeof( LED_ledEnableMask1 ), 7 );
+my_LED_write_page( (uint8_t*)LED_ledEnableMask1, sizeof( LED_ledEnableMask1 ), 1 /*page*/ );
+my_LED_write_page( (uint8_t*)LED_ledEnableMask1, sizeof( LED_ledEnableMask1 ), 2 );
+my_LED_write_page( (uint8_t*)LED_ledEnableMask1, sizeof( LED_ledEnableMask1 ), 3 );
+my_LED_write_page( (uint8_t*)LED_ledEnableMask1, sizeof( LED_ledEnableMask1 ), 4 );
+my_LED_write_page( (uint8_t*)LED_ledEnableMask1, sizeof( LED_ledEnableMask1 ), 5 );
+my_LED_write_page( (uint8_t*)LED_ledEnableMask1, sizeof( LED_ledEnableMask1 ), 6 );
+my_LED_write_page( (uint8_t*)LED_ledEnableMask1, sizeof( LED_ledEnableMask1 ), 7 );
 
-//my_LED_sendPage( (uint8_t*)My_LED_Brightness0, sizeof( My_LED_Brightness0 ), 0 );
-my_LED_sendPage( (uint8_t*)My_LED_Brightness1, sizeof( My_LED_Brightness1 ), 1 );
-my_LED_sendPage( (uint8_t*)My_LED_Brightness2, sizeof( My_LED_Brightness2 ), 2 );
-my_LED_sendPage( (uint8_t*)My_LED_Brightness3, sizeof( My_LED_Brightness3 ), 3 );
-my_LED_sendPage( (uint8_t*)My_LED_Brightness4, sizeof( My_LED_Brightness4 ), 4 );
-my_LED_sendPage( (uint8_t*)My_LED_Brightness5, sizeof( My_LED_Brightness5 ), 5 );
-my_LED_sendPage( (uint8_t*)My_LED_Brightness6, sizeof( My_LED_Brightness6 ), 6 );
-my_LED_sendPage( (uint8_t*)My_LED_Brightness7, sizeof( My_LED_Brightness7 ), 7 );
+//my_LED_write_page( (uint8_t*)My_LED_Brightness0, sizeof( My_LED_Brightness0 ), 0 );
+my_LED_write_page( (uint8_t*)My_LED_Brightness1, sizeof( My_LED_Brightness1 ), 1 );
+my_LED_write_page( (uint8_t*)My_LED_Brightness2, sizeof( My_LED_Brightness2 ), 2 );
+my_LED_write_page( (uint8_t*)My_LED_Brightness3, sizeof( My_LED_Brightness3 ), 3 );
+my_LED_write_page( (uint8_t*)My_LED_Brightness4, sizeof( My_LED_Brightness4 ), 4 );
+my_LED_write_page( (uint8_t*)My_LED_Brightness5, sizeof( My_LED_Brightness5 ), 5 );
+my_LED_write_page( (uint8_t*)My_LED_Brightness6, sizeof( My_LED_Brightness6 ), 6 );
+my_LED_write_page( (uint8_t*)My_LED_Brightness7, sizeof( My_LED_Brightness7 ), 7 );
 
 mode = 0; // Display Mode
 fs   = 0; // Frame Start

@@ -11,7 +11,7 @@
 //------------------------------------------------------------------------------
 
 typedef enum MyLedControlMode {
-  MyLedControlMode_rotate_MODE = 0,
+  MyLedControlMode_rotate_MODE = 0, ///< Increase MODE by amount.
   MyLedControlMode_rotate_FS   = 1,
   MyLedControlMode_rotate_PFS  = 2,
   MyLedControlMode_rotate_CNS  = 3,
@@ -37,10 +37,18 @@ typedef enum MyLedControlMode {
   MyLedControlMode_rotate_demo = 30
 } MyLedControlMode;
 
+/*
+typedef enum MyLedDemoMode {
+  MyLedDemoMode_turn_all_off,
+  MyLedDemoMode_turn_all_on,
+  MyLedDemoMode_play_all_pages
+} MyLedDemoMode;
+*/
+
 typedef struct MyLedControl {
-	MyLedControlMode mode;
-	uint8_t          amount;
-	uint16_t         index;
+  MyLedControlMode mode;   ///< Control mode.
+  uint8_t          amount; ///< Amount to set.
+  uint16_t         index;  ///< ISSI LED index.
 } MyLedControl;
 
 //------------------------------------------------------------------------------

@@ -72,3 +72,9 @@ uint8_t ags;  // Audio Gain Selection
 uint8_t aar;  // Audio ADC Rate
 
 uint8_t demo_id;
+
+//------------------------------------------------------------------------------
+// Prototypes for forward reference from my_LED_setup.c to my_led_scan.c
+//------------------------------------------------------------------------------
+
+void my_LED_write_page( uint8_t *brightness, uint8_t len, uint8_t page );

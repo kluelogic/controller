@@ -29,5 +29,5 @@ typedef struct MyLcdControl {
 //------------------------------------------------------------------------------
 
 void LCD_writeDisplayReg( uint8_t page, uint8_t *buffer, uint8_t len );
-void my_LCD_set_str( char* s, uint8_t row, uint8_t col );
-void my_LCD_writeDisplayRegs( uint8_t img_idx );
+void my_LCD_set_str( const char* s, const uint8_t row, const uint8_t col );
+void my_LCD_display_image( const uint8_t img_idx );
