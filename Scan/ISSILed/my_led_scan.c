@@ -285,11 +285,20 @@ void my_LED_play_all_pages_infinitely() {
 
   my_LED_write_page( (uint8_t*)My_LED_Brightness0, sizeof( My_LED_Brightness0 ), 0 );
 
-  LED_writeReg( 0x02, 0x00, 0x0B ); // Auto Play Control Register 1; CNS=0 (infinite), FNS=0 (all)
-  LED_writeReg( 0x03, 0x09, 0x0B ); // Auto Play Control Register 2; FDT=9 (99ms)
-  LED_writeReg( 0x08, 0x00, 0x0B ); // Breath    Control Register 1; FOT=0 (26ms), FIT=0 (26ms)
-  LED_writeReg( 0x09, 0x00, 0x0B ); // Breath    Control Register 2; B_EN=0, ET=0 (3.5ms)
-  LED_writeReg( 0x00, 0x80, 0x0B ); // Configuration     Register; MODE=1 (auto frame), FS=0 (start frame1)
+  cns  = 0; // infinite
+  fns  = 0; // use all frames
+  fdt  = 9; // 99ms
+  fit  = 0; // 26ms
+  fot  = 0; // 26ms
+  b_en = 0; // no breathing
+  et   = 0; // 3.5ms
+  mode = 1; // auto play mode
+  fs   = 0; // starting frame 1
+  my_LED_write_Auto_Play_Control_Reg1(); // cns, fns
+  my_LED_write_Auto_Play_Control_Reg2(); // fdt
+  my_LED_write_Breath_Control_Reg1();    // fot, fit
+  my_LED_write_Breath_Control_Reg2();    // b_en, et
+  my_LED_write_Configuration_Reg();      // mode, fs
 } // my_LED_play_all_pages_infinitely
 
 //------------------------------------------------------------------------------
