@@ -29,7 +29,7 @@ git remote -v
 # upstream	https://github.com/kiibohd/controller.git (fetch)
 # upstream	https://github.com/kiibohd/controller.git (push)
 
-git pull
+git pull https://github.com/kiibohd/controller.git master
 
 # Already up-to-date.
 ```
@@ -42,4 +42,5 @@ git clone https://github.com/kluelogic/kll.git
 cd kll/
 git remote add upstream https://github.com/kiibohd/kll.git
 git remote -v
+git pull https://github.com/kiibohd/kll.git master
 ```
