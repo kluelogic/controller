@@ -32,6 +32,8 @@ git remote -v
 git pull https://github.com/kiibohd/controller.git master
 
 # Already up-to-date.
+
+git push
 ```
 
 ## Create a local clone of kll
@@ -43,4 +45,5 @@ cd kll/
 git remote add upstream https://github.com/kiibohd/kll.git
 git remote -v
 git pull https://github.com/kiibohd/kll.git master
+git push
 ```
