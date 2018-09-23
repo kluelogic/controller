@@ -1,6 +1,6 @@
 ###| CMAKE Kiibohd Controller Bootloader |###
 #
-# Jacob Alexander 2011-2016
+# Jacob Alexander 2011-2017
 # Due to this file's usefulness:
 #
 # Released into the Public Domain
@@ -22,9 +22,17 @@
 set ( CHIP
 	"mk20dx128vlf5"    # McHCK       mk20dx128vlf5
 #	"mk20dx256vlh7"    # Kiibohd-dfu mk20dx256vlh7
+#	"sam4s8c"          # Sam
 	CACHE STRING "Chip"
 )
 
+if ( "${CHIP}" MATCHES "^mk2.*$" )
+	set( FAMILY "kinetis" )
+elseif ( "${CHIP}" MATCHES "^sam.*$" )
+	set( FAMILY "sam" )
+else ( )
+	message( FATAL_ERROR "Unknown chip ${CHIP}" )
+endif ( )
 
 
 ###
@@ -43,10 +51,52 @@ set ( COMPILER
 
 
 ###
+# Product String
+#
+set ( BOOT_PRODUCT_STR
+	"Kiibohd DFU Bootloader"
+	CACHE STRING "Product String"
+)
+
+
+
+###
+# Flashing Station ID
+#
+set ( FLASHING_STATION_ID
+	"xXXx"
+	CACHE STRING "Placeholder string for flashing station"
+)
+
+
+
+###
 # Bootloader Configuration
 #
 set ( BOOTLOADER 1 )
 
+
+###
+# Debug
+#
+
+# Use a JLink programmer (no bootloader required)
+set( JLINK
+	1
+	CACHE STRING "Enable JLINK Programming/Debugging"
+)
+
+#| swd or jtag
+set( JLINK_INTERFACE
+	"swd"
+	CACHE STRING "JLink Interface"
+)
+
+#| Speed in kHz or auto
+set( JLINK_SPEED
+	"auto"
+	CACHE STRING "JLink Speed"
+)
 
 
 ###
@@ -56,23 +106,61 @@ set ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/../Lib/CMake )
 include ( initialize )
 
 
-
 ##
 # Source Defines
 #
+if ( FAMILY STREQUAL "kinetis" )
 set ( SRCS
 	main.c
+	debug.c
 	dfu.c
 	dfu.desc.c
 	flash.c
-	kinetis.c
 	usb.c
+	${FAMILY}.c
+	Devices/${CHIP}.c
 )
 
-# Only compile in if necessary
-if ( CHIP STREQUAL "mk20dx256vlh7" )
-	set( SRCS ${SRCS}
-		debug.c
+elseif ( FAMILY STREQUAL "sam" )
+set ( SRCS
+	../Lib/ASF/common/services/clock/sam4s/sysclk.c
+	../Lib/ASF/common/services/isp/flip/sam/isp.c
+	../Lib/ASF/common/services/usb/class/dfu_flip/device/udi_dfu_atmel.c
+	../Lib/ASF/common/services/usb/class/dfu_flip/device/udi_dfu_atmel_desc.c
+	../Lib/ASF/common/services/usb/udc/udc.c
+	../Lib/ASF/common/utils/interrupt/interrupt_sam_nvic.c
+	../Lib/ASF/sam/drivers/efc/efc.c
+	../Lib/ASF/sam/drivers/matrix/matrix.c
+	../Lib/ASF/sam/drivers/pmc/pmc.c
+	../Lib/ASF/sam/drivers/udp/udp_device.c
+	../Lib/ASF/sam/drivers/wdt/wdt.c
+	../Lib/ASF/sam/services/flash_efc/flash_efc.c
+	../Lib/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.c
+
+	main.c
+	debug.c
+	dfu.c
+	dfu.desc.c
+	flash.c
+	usb.c
+	Devices/${CHIP}.c
+)
+
+add_definitions(
+	-D__SAM4S8C__
+	-DBOARD=SAM4S_XPLAINED_PRO
+)
+
+else ( )
+	message( FATAL_ERROR "Unsupported family ${FAMILY}" )
+
+endif ( )
+
+
+# Add device file, if it exists
+if ( EXISTS ${CMAKE_SOURCE_DIR}/Devices/${BOOT_PRODUCT_STR}.c )
+	set ( SRCS ${SRCS}
+		Devices/${BOOT_PRODUCT_STR}.c
 	)
 endif ()
 
@@ -93,7 +181,41 @@ endforeach ()
 #
 include_directories (
 	${CMAKE_SOURCE_DIR}/../Lib
+	${CMAKE_SOURCE_DIR}/..
 	${CMAKE_SOURCE_DIR}
+
+	"../Lib/ASF/config"
+	"../Lib/ASF/common/boards"
+	"../Lib/ASF/common/services/clock"
+	"../Lib/ASF/common/services/gpio"
+	"../Lib/ASF/common/services/ioport"
+	"../Lib/ASF/common/services/isp/flip"
+	"../Lib/ASF/common/services/isp/flip/module_config"
+	"../Lib/ASF/common/services/sleepmgr"
+	"../Lib/ASF/common/services/usb"
+	"../Lib/ASF/common/services/usb/class/dfu_flip"
+	"../Lib/ASF/common/services/usb/class/dfu_flip/device"
+	"../Lib/ASF/common/services/usb/class/hid"
+	"../Lib/ASF/common/services/usb/class/hid/device"
+	"../Lib/ASF/common/services/usb/class/hid/device/kbd"
+	"../Lib/ASF/common/services/usb/udc"
+	"../Lib/ASF/common/utils"
+	"../Lib/ASF/sam/boards"
+	"../Lib/ASF/sam/boards/sam4s_xplained_pro"
+	"../Lib/ASF/sam/drivers/efc"
+	"../Lib/ASF/sam/drivers/matrix"
+	"../Lib/ASF/sam/drivers/pio"
+	"../Lib/ASF/sam/drivers/pmc"
+	"../Lib/ASF/sam/drivers/udp"
+	"../Lib/ASF/sam/drivers/wdt"
+	"../Lib/ASF/sam/services/flash_efc"
+	"../Lib/ASF/sam/services/flash_efc/flash_program_example/sam4s16c_sam4s_xplained"
+	"../Lib/ASF/sam/utils"
+	"../Lib/ASF/sam/utils/cmsis/sam4s/include"
+	"../Lib/ASF/sam/utils/header_files"
+	"../Lib/ASF/sam/utils/preprocessor"
+	"../Lib/CMSIS/Include"
+	"../Lib/CMSIS/Lib/GCC"
 )
 
 
@@ -110,6 +232,10 @@ set ( TARGET kiibohd_bootloader )
 
 #| General Settings
 cmake_minimum_required ( VERSION 2.8 )
+
+#| Compiler Version (only available after project() command)
+message( STATUS "Full Compiler:" )
+message( "${CMAKE_C_COMPILER} ${CMAKE_C_COMPILER_VERSION}" )
 
 
 
@@ -152,7 +278,7 @@ find_package ( Ctags ) # Optional
 
 if ( CTAGS_EXECUTABLE )
 	# Generate the ctags
-	execute_process( COMMAND ctags ${SRCS}
+	execute_process( COMMAND ${CTAGS_EXECUTABLE} ${SRCS}
 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 	)
 endif ()
@@ -180,7 +306,6 @@ endif ()
 set ( TARGET_ELF ${TARGET}.elf )
 add_executable ( ${TARGET_ELF} ${SRCS} )
 
-
 #| .ELF Properties
 set_target_properties ( ${TARGET_ELF} PROPERTIES
 	LINK_FLAGS ${LINKER_FLAGS}
@@ -190,8 +315,14 @@ set_target_properties ( ${TARGET_ELF} PROPERTIES
 
 #| Convert the .ELF into a .bin to load onto the McHCK
 set ( TARGET_BIN ${TARGET}.bin )
+set ( TARGET_HEX ${TARGET}.hex )
+set(
+	TARGET_ADDRESS "0x0"
+	CACHE STRING "Bootloader starting address"
+)
 add_custom_command ( TARGET ${TARGET_ELF} POST_BUILD
 	COMMAND ${CMAKE_OBJCOPY} ${BIN_FLAGS} ${TARGET_ELF} ${TARGET_BIN}
+	COMMAND ${CMAKE_OBJCOPY} -O ihex ${TARGET_ELF} ${TARGET_HEX}
 	COMMENT "Creating binary file to load:  ${TARGET_BIN}"
 )
 
@@ -231,3 +362,15 @@ add_custom_target ( SizeAfter ALL
 	COMMENT "Chip usage for ${CHIP}"
 )
 
+
+###
+# Setup Loader Script and Program
+#
+
+if ( JLINK )
+configure_file( ${CMAKE_SOURCE_DIR}/../LoadFile/load.jlink load NEWLINE_STYLE UNIX )
+configure_file( ${CMAKE_SOURCE_DIR}/../LoadFile/dump.jlink dump NEWLINE_STYLE UNIX @ONLY )
+configure_file( ${CMAKE_SOURCE_DIR}/../LoadFile/debug.jlink debug NEWLINE_STYLE UNIX )
+configure_file( ${CMAKE_SOURCE_DIR}/../LoadFile/rtt.jlink rtt NEWLINE_STYLE UNIX )
+configure_file( ${CMAKE_SOURCE_DIR}/../LoadFile/reset.jlink reset NEWLINE_STYLE UNIX )
+endif()

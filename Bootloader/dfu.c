@@ -1,5 +1,5 @@
 /* Copyright (c) 2011,2012 Simon Schubert <2@0x2c.org>.
- * Modifications by Jacob Alexander 2014-2015 <haata@kiibohd.com>
+ * Modifications by Jacob Alexander 2014-2018 <haata@kiibohd.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #include "usb.h"
 #include "dfu.h"
 #include "debug.h"
+#include "weak.h"
 
 
 
@@ -28,15 +29,18 @@
 void dfu_write_done( enum dfu_status err, struct dfu_ctx *ctx )
 {
 	ctx->status = err;
-	if (ctx->status == DFU_STATUS_OK) {
-		switch (ctx->state) {
+	if ( ctx->status == DFU_STATUS_OK )
+	{
+		switch ( ctx->state )
+		{
 		case DFU_STATE_dfuDNBUSY:
 			ctx->state = DFU_STATE_dfuDNLOAD_IDLE;
 			break;
 		default:
 			break;
 		}
-	} else {
+	} else
+	{
 		ctx->state = DFU_STATE_dfuERROR;
 	}
 }
@@ -45,18 +49,42 @@ static void dfu_dnload_complete( void *buf, ssize_t len, void *cbdata )
 {
 	struct dfu_ctx *ctx = cbdata;
 
-	if (len > 0)
+	if ( len > 0 )
+	{
 		ctx->state = DFU_STATE_dfuDNBUSY;
+	}
 	else
+	{
 		ctx->state = DFU_STATE_dfuMANIFEST;
-	ctx->status = ctx->finish_write(buf, ctx->off, len);
-	ctx->off += len;
+	}
+	ctx->status = ctx->finish_write( buf, ctx->off, len );
+
+	// If this is the first block (and was used for key validation), don't increment offset
+	switch ( ctx->verified )
+	{
+	case DFU_VALIDATION_PENDING:
+		ctx->verified = DFU_VALIDATION_OK;
+		break;
+	case DFU_VALIDATION_OK:
+		ctx->off += len;
+		break;
+	default:
+		break;
+	}
 	ctx->len = len;
 
-	if (ctx->status != DFU_STATUS_async)
-		dfu_write_done(ctx->status, ctx);
+	if ( ctx->status != DFU_STATUS_async )
+	{
+		dfu_write_done( ctx->status, ctx );
+	}
 
-	usb_handle_control_status(ctx->state == DFU_STATE_dfuERROR);
+	usb_handle_control_status( ctx->state == DFU_STATE_dfuERROR );
+
+	// If we failed validation, reset
+	if ( ctx->verified == DFU_VALIDATION_FAILED )
+	{
+		SOFTWARE_RESET();
+	}
 }
 
 static void dfu_reset_system( void *buf, ssize_t len, void *cbdata )
@@ -64,14 +92,31 @@ static void dfu_reset_system( void *buf, ssize_t len, void *cbdata )
 	SOFTWARE_RESET();
 }
 
-static int dfu_handle_control( struct usb_ctrl_req_t *req, void *data )
+int dfu_handle_control( struct usb_ctrl_req_t *req, void *data )
 {
 	struct dfu_ctx *ctx = data;
 	int fail = 1;
 
+	if ( req->bRequest == MS_VENDOR_CODE) {
+		/* Microsoft extensions */
+		switch (req->wIndex) {
+			case USB_CTRL_REQ_MSFT_COMPAT_ID:
+				usb_ep0_tx_cp(&msft_extended_compat_desc, msft_extended_compat_desc.dwLength, req->wLength, NULL, NULL);
+		}
+
+		goto out_no_status;
+	}
+
 	switch ( (enum dfu_ctrl_req_code)req->bRequest )
 	{
-	case USB_CTRL_REQ_DFU_DNLOAD: {
+	// On Detach, just reset MCU and (attempt to) boot to firmware
+	case USB_CTRL_REQ_DFU_DETACH:
+		ctx->state = DFU_STATE_dfuIDLE;
+		usb_handle_control_status_cb(dfu_reset_system);
+		goto out_no_status;
+
+	case USB_CTRL_REQ_DFU_DNLOAD:
+	{
 		void *buf;
 
 		switch ( ctx->state )
@@ -106,8 +151,8 @@ static int dfu_handle_control( struct usb_ctrl_req_t *req, void *data )
 		}
 		goto out_no_status;
 	}
-	case USB_CTRL_REQ_DFU_UPLOAD: {
-#if defined(_mk20dx256vlh7_) // Kiibohd-dfu
+	case USB_CTRL_REQ_DFU_UPLOAD:
+	{
 		void *buf;
 		size_t len = 0;
 
@@ -164,14 +209,10 @@ static int dfu_handle_control( struct usb_ctrl_req_t *req, void *data )
 		printHex( ctx->state );
 		print( NL );
 #endif
-
 		goto out;
-#else
-		ctx->state = DFU_STATE_dfuERROR;
-		goto out;
-#endif
 	}
-	case USB_CTRL_REQ_DFU_GETSTATUS: {
+	case USB_CTRL_REQ_DFU_GETSTATUS:
+	{
 		struct dfu_status_t st;
 
 		st.bState = ctx->state;
@@ -190,6 +231,8 @@ static int dfu_handle_control( struct usb_ctrl_req_t *req, void *data )
 		{
 		case DFU_STATE_dfuMANIFEST:
 			ctx->state = DFU_STATE_dfuMANIFEST_WAIT_RESET;
+			// Download finished, just waiting for reset now
+			Chip_download_complete();
 			break;
 		case DFU_STATE_dfuMANIFEST_WAIT_RESET:
 			ctx->state = DFU_STATE_dfuIDLE;
@@ -204,7 +247,9 @@ static int dfu_handle_control( struct usb_ctrl_req_t *req, void *data )
 		ctx->state = DFU_STATE_dfuIDLE;
 		ctx->status = DFU_STATUS_OK;
 		break;
-	case USB_CTRL_REQ_DFU_GETSTATE: {
+
+	case USB_CTRL_REQ_DFU_GETSTATE:
+	{
 		uint8_t st = ctx->state;
 		usb_ep0_tx_cp( &st, sizeof(st), req->wLength, NULL, NULL );
 		break;
@@ -221,8 +266,9 @@ static int dfu_handle_control( struct usb_ctrl_req_t *req, void *data )
 			goto err;
 		}
 		break;
+
 	default:
-		return (0);
+		return 0;
 	}
 
 	fail = 0;
@@ -233,17 +279,15 @@ err:
 err_have_status:
 	ctx->state = DFU_STATE_dfuERROR;
 out:
-	usb_handle_control_status(fail);
+	usb_handle_control_status( fail );
 out_no_status:
-	return (1);
+	return 1;
 }
 
 void dfu_init( dfu_setup_read_t setup_read, dfu_setup_write_t setup_write, dfu_finish_write_t finish_write, struct dfu_ctx *ctx )
 {
 	ctx->state = DFU_STATE_dfuIDLE;
-#if defined(_mk20dx256vlh7_) // Kiibohd-dfu
 	ctx->setup_read = setup_read;
-#endif
 	ctx->setup_write = setup_write;
 	ctx->finish_write = finish_write;
 	usb_attach_function(&dfu_function, &ctx->header);

@@ -63,3 +63,17 @@ compile_commands.json
 ##################
 kll
 
+# Build Directories #
+#####################
+*.gcc.make*
+*.gcc.ninja*
+*.clang.make*
+*.clang.ninja*
+
+# Python Generated #
+####################
+__pycache__
+
+# Misc #
+########
+build
