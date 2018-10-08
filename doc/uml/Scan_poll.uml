@@ -1,0 +1,12 @@
+'
+' Scan_poll.uml
+'
+
+@startuml
+title Scan_poll()
+start
+:Pixel_process|
+:LED_scan|
+:LCD_scan|
+stop
+@enduml

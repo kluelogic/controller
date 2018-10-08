@@ -1,0 +1,19 @@
+'
+' LED_setup.uml
+'
+
+@startuml
+title LED_setup()
+start
+':CLI_registerDictionary|
+:LED_timePrev = Time_now();
+:i2c_initial|
+:i2c_setup|
+:LED_zeroControlPages|
+:LED_reset|
+partition my_LED_setup.c {
+ :write LED enable/brightness to LED page buffers;  
+ :initialize local LED variables;
+}
+stop
+@enduml

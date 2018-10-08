@@ -39,6 +39,7 @@
 #include "i2c.h"
 #include "led_scan.h"
 
+#include "my_led_scan.h"
 
 
 // ----- Defines -----
@@ -254,6 +255,7 @@ const LED_EnableBuffer LED_ledEnableMask[ISSI_Chips_define] = {
 // Latency measurement resource
 static uint8_t ledLatencyResource;
 
+#include "my_led_scan_decl.c"
 
 
 // ----- Functions -----
@@ -757,6 +759,8 @@ inline void LED_setup()
 
 	// Allocate latency resource
 	ledLatencyResource = Latency_add_resource("ISSILed", LatencyOption_Ticks);
+
+#include "my_LED_setup.c"
 }
 
 
@@ -1255,3 +1259,4 @@ void cliFunc_ledSet( char* args )
 #endif
 }
 
+#include "my_led_scan.c"

@@ -56,5 +56,5 @@ typedef struct MyLedControl {
 //------------------------------------------------------------------------------
 
 //void my_LED_get_reg( char* buf, uint8_t line );
-void    LED_sendPage( uint8_t *buffer, uint8_t len, uint8_t page );
-void my_LED_sendPage( uint8_t *buffer, uint8_t len, uint8_t page );
+//void    LED_sendPage( uint8_t *buffer, uint8_t len, uint8_t page );
+//void my_LED_sendPage( uint8_t *buffer, uint8_t len, uint8_t page );

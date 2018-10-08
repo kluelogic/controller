@@ -6,44 +6,44 @@
 // Constants
 //------------------------------------------------------------------------------
 
-const uint8_t My_LED_Brightness0[] = {
-	0xE8, // I2C address
-	0x24, // Starting register address
+const uint16_t My_LED_Brightness0[] = {
+	LED_MapCh1_Addr_define, // I2C address
+	ISSI_LEDPwmRegStart,    // Starting register address
 	MyLedBrightness0_define
 };
-const uint8_t My_LED_Brightness1[] = {
-	0xE8, // I2C address
-	0x24, // Starting register address
+const uint16_t My_LED_Brightness1[] = {
+	LED_MapCh1_Addr_define, // I2C address
+	ISSI_LEDPwmRegStart,    // Starting register address
 	MyLedBrightness1_define
 };
-const uint8_t My_LED_Brightness2[] = {
-	0xE8, // I2C address
-	0x24, // Starting register address
+const uint16_t My_LED_Brightness2[] = {
+	LED_MapCh1_Addr_define, // I2C address
+	ISSI_LEDPwmRegStart,    // Starting register address
 	MyLedBrightness2_define
 };
-const uint8_t My_LED_Brightness3[] = {
-	0xE8, // I2C address
-	0x24, // Starting register address
+const uint16_t My_LED_Brightness3[] = {
+	LED_MapCh1_Addr_define, // I2C address
+	ISSI_LEDPwmRegStart,    // Starting register address
 	MyLedBrightness3_define
 };
-const uint8_t My_LED_Brightness4[] = {
-	0xE8, // I2C address
-	0x24, // Starting register address
+const uint16_t My_LED_Brightness4[] = {
+	LED_MapCh1_Addr_define, // I2C address
+	ISSI_LEDPwmRegStart,    // Starting register address
 	MyLedBrightness4_define
 };
-const uint8_t My_LED_Brightness5[] = {
-	0xE8, // I2C address
-	0x24, // Starting register address
+const uint16_t My_LED_Brightness5[] = {
+	LED_MapCh1_Addr_define, // I2C address
+	ISSI_LEDPwmRegStart,    // Starting register address
 	MyLedBrightness5_define
 };
-const uint8_t My_LED_Brightness6[] = {
-	0xE8, // I2C address
-	0x24, // Starting register address
+const uint16_t My_LED_Brightness6[] = {
+	LED_MapCh1_Addr_define, // I2C address
+	ISSI_LEDPwmRegStart,    // Starting register address
 	MyLedBrightness6_define
 };
-const uint8_t My_LED_Brightness7[] = {
-	0xE8, // I2C address
-	0x24, // Starting register address
+const uint16_t My_LED_Brightness7[] = {
+	LED_MapCh1_Addr_define, // I2C address
+	ISSI_LEDPwmRegStart,    // Starting register address
 	MyLedBrightness7_define
 };
 
@@ -77,4 +77,4 @@ uint8_t demo_id;
 // Prototypes for forward reference from my_LED_setup.c to my_led_scan.c
 //------------------------------------------------------------------------------
 
-void my_LED_write_page( uint8_t *brightness, uint8_t len, uint8_t page );
+void my_LED_write_page( uint16_t *brightness, uint32_t len, uint8_t page ) {

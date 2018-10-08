@@ -1,0 +1,15 @@
+'
+' Scan_setup
+'
+
+@startuml
+title Scan_setup()
+start
+:Connect_setup|
+:Matrix_setup|
+#LightGreen:LED_setup|
+:LCD_setup|
+:Pixel_setup|
+:Matrix_start|
+stop
+@enduml

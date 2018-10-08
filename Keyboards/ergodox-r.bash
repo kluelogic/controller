@@ -34,7 +34,7 @@ DefaultMap="infinity_ergodox/all-leds infinity_ergodox/mdergo1Overlay infinity_e
 PartialMaps[1]="infinity_ergodox/iced_func"
 PartialMaps[2]="infinity_ergodox/iced_numpad"
 
-
+source my_ergodox.bash
 
 ##########################
 # Advanced Configuration #

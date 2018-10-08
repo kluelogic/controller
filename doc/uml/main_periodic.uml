@@ -1,0 +1,14 @@
+'
+' main_periodic.uml
+'
+
+@startuml
+title main_periodic()
+[*] --> PeriodicStage_Scan
+PeriodicStage_Scan : Scan_poll()
+PeriodicStage_Scan --> PeriodicStage_Macro : Scan_periodic()
+PeriodicStage_Macro : Macro_periodic()
+PeriodicStage_Macro --> PeriodicStage_Output
+PeriodicStage_Output : Output_periodic()
+PeriodicStage_Output --> PeriodicStage_Scan
+@enduml

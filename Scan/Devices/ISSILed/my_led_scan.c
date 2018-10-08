@@ -92,15 +92,19 @@ void my_LED_get_reg( char* buf, uint8_t line ) {
 //------------------------------------------------------------------------------
 /**
    Write the specified brightness-definition array to an LED page buffer.
-   @param[in] brightness Array of brightness definition (8-bit unsigned integer).
+   @param[in] brightness Array of brightness definition (16-bit unsigned integer).
    @param[in] len        Length of the array.
    @param[in] page       LED page number. Must be between 0 and 7.
  */
 //------------------------------------------------------------------------------
 
-void my_LED_write_page( uint8_t *brightness, uint8_t len, uint8_t page ) {
-  LED_sendPage( brightness, len, page );
-  delay( 30 ); // wait 30[ms]
+void my_LED_write_page( uint16_t *brightness, uint32_t len, uint8_t page ) {
+  int ch = 0;
+  uint8_t bus  = LED_ChannelMapping[ ch ].bus;
+  uint8_t addr = LED_ChannelMapping[ ch ].addr;
+
+  LED_sendPage( bus, addr, brightness, len, page );
+  delay_ms( 30 ); // wait 30[ms]
 } // my_LED_write_page
 
 //------------------------------------------------------------------------------
@@ -111,12 +115,15 @@ void my_LED_write_page( uint8_t *brightness, uint8_t len, uint8_t page ) {
 //------------------------------------------------------------------------------
 
 void my_LED_set_all_brightness( uint8_t amount ) {
+  /*
   LedControl led_ctrl;
 
   led_ctrl.mode   = LedControlMode_brightness_set_all;
   led_ctrl.amount = amount;
   led_ctrl.index  = 0x00; // dummy
   LED_control( &led_ctrl );
+  */
+  LED_control( LedControl_brightness_set_all, amount );
 } // my_LED_set_all_brightness
 
 //------------------------------------------------------------------------------
@@ -135,11 +142,14 @@ void my_LED_set_all_brightness( uint8_t amount ) {
 //------------------------------------------------------------------------------
 
 void my_LED_write_Configuration_Reg() {
+  int ch = 0;
+  uint8_t bus  = LED_ChannelMapping[ ch ].bus;
+  uint8_t addr = LED_ChannelMapping[ ch ].addr;
   uint8_t mode_fs;
   char s[3];
 
   mode_fs = ( mode << 3 ) | fs;
-  LED_writeReg( 0x00, mode_fs, 0x0B ); // Configuration Register (0x00)
+  LED_writeReg( bus, addr, 0x00, mode_fs, ISSI_ConfigPage ); // Configuration Register (0x00)
   my_LED_itoa( mode, s ); my_LCD_set_str( s, 1, 19 );
   my_LED_itoa(   fs, s ); my_LCD_set_str( s, 3,  4 );
   my_LCD_display_image( 3 );
@@ -152,9 +162,12 @@ void my_LED_write_Configuration_Reg() {
 //------------------------------------------------------------------------------
 
 void my_LED_write_Picture_Display_Reg() {
+  int ch = 0;
+  uint8_t bus  = LED_ChannelMapping[ ch ].bus;
+  uint8_t addr = LED_ChannelMapping[ ch ].addr;
   char s[3];
 
-  LED_writeReg( 0x01, pfs, 0x0B ); // Picture Display Register (0x01)
+  LED_writeReg( bus, addr, 0x01, pfs, ISSI_ConfigPage ); // Picture Display Register (0x01)
   my_LED_itoa( pfs, s );
   my_LCD_set_str( s, 2, 4 );
   my_LCD_display_image( 3 );
@@ -167,11 +180,14 @@ void my_LED_write_Picture_Display_Reg() {
 //------------------------------------------------------------------------------
 
 void my_LED_write_Auto_Play_Control_Reg1() {
+  int ch = 0;
+  uint8_t bus  = LED_ChannelMapping[ ch ].bus;
+  uint8_t addr = LED_ChannelMapping[ ch ].addr;
   uint8_t cns_fns;
   char s[3];
 
   cns_fns = ( cns << 4 ) | fns;
-  LED_writeReg( 0x02, cns_fns, 0x0B ); // Auto Play Control Register (0x02)
+  LED_writeReg( bus, addr, 0x02, cns_fns, ISSI_ConfigPage ); // Auto Play Control Register (0x02)
   my_LED_itoa( cns, s ); my_LCD_set_str( s, 3,  9 );
   my_LED_itoa( fns, s ); my_LCD_set_str( s, 3, 14 );
   my_LCD_display_image( 3 );
@@ -184,9 +200,12 @@ void my_LED_write_Auto_Play_Control_Reg1() {
 //------------------------------------------------------------------------------
 
 void my_LED_write_Auto_Play_Control_Reg2() {
+  int ch = 0;
+  uint8_t bus  = LED_ChannelMapping[ ch ].bus;
+  uint8_t addr = LED_ChannelMapping[ ch ].addr;
   char s[3];
 
-  LED_writeReg( 0x03, fdt, 0x0B ); // Auto Play Control Register (0x03)
+  LED_writeReg( bus, addr, 0x03, fdt, ISSI_ConfigPage ); // Auto Play Control Register (0x03)
   my_LED_itoa( fdt, s );
   my_LCD_set_str( s, 3, 19 );
   my_LCD_display_image( 3 );
@@ -199,11 +218,14 @@ void my_LED_write_Auto_Play_Control_Reg2() {
 //------------------------------------------------------------------------------
 
 void my_LED_write_Display_Option_Reg() {
+  int ch = 0;
+  uint8_t bus  = LED_ChannelMapping[ ch ].bus;
+  uint8_t addr = LED_ChannelMapping[ ch ].addr;
   uint8_t ic_be_bpt;
   char s[3];
 
   ic_be_bpt = ( ic << 5 ) | ( be << 3 ) | bpt;
-  LED_writeReg( 0x05, ic_be_bpt, 0x0B ); // Display Option Register (0x05)
+  LED_writeReg( bus, addr, 0x05, ic_be_bpt, ISSI_ConfigPage ); // Display Option Register (0x05)
   my_LED_itoa(  ic, s ); my_LCD_set_str( s, 2,  9 );
   my_LED_itoa(  be, s ); my_LCD_set_str( s, 2, 14 );
   my_LED_itoa( bpt, s ); my_LCD_set_str( s, 2, 19 );
@@ -217,11 +239,14 @@ void my_LED_write_Display_Option_Reg() {
 //------------------------------------------------------------------------------
 
 void my_LED_write_Breath_Control_Reg1() {
+  int ch = 0;
+  uint8_t bus  = LED_ChannelMapping[ ch ].bus;
+  uint8_t addr = LED_ChannelMapping[ ch ].addr;
   uint8_t fot_fit;
   char s[3];
 
   fot_fit = ( fot << 4 ) | fit;
-  LED_writeReg( 0x08, fot_fit, 0x0B ); // Breath Control Register 1 (0x08)
+  LED_writeReg( bus, addr, 0x08, fot_fit, ISSI_ConfigPage ); // Breath Control Register 1 (0x08)
   my_LED_itoa( fot, s ); my_LCD_set_str( s, 4, 14 );
   my_LED_itoa( fit, s ); my_LCD_set_str( s, 4,  9 );
   my_LCD_display_image( 3 );
@@ -234,11 +259,14 @@ void my_LED_write_Breath_Control_Reg1() {
 //------------------------------------------------------------------------------
 
 void my_LED_write_Breath_Control_Reg2() {
+  int ch = 0;
+  uint8_t bus  = LED_ChannelMapping[ ch ].bus;
+  uint8_t addr = LED_ChannelMapping[ ch ].addr;
   uint8_t b_en_et;
   char s[3];
 
   b_en_et = ( b_en << 4 ) | et;
-  LED_writeReg( 0x09, b_en_et, 0x0B ); // Breath Control Register 2 (0x09)
+  LED_writeReg( bus, addr, 0x09, b_en_et, ISSI_ConfigPage ); // Breath Control Register 2 (0x09)
   my_LED_itoa( b_en, s ); my_LCD_set_str( s, 4,  4 );
   my_LED_itoa(   et, s ); my_LCD_set_str( s, 4, 19 );
   my_LCD_display_image( 3 );
@@ -283,7 +311,7 @@ void my_LED_play_all_pages_infinitely() {
 
   // Restore the page 0 as it might have been modified.
 
-  my_LED_write_page( (uint8_t*)My_LED_Brightness0, sizeof( My_LED_Brightness0 ), 0 );
+  my_LED_write_page( (uint16_t*)My_LED_Brightness0, sizeof( My_LED_Brightness0 ) / 2, 1 );
 
   cns  = 0; // infinite
   fns  = 0; // use all frames
@@ -439,9 +467,9 @@ void my_LED_control( MyLedControl *control ) {
   }
 
   if ( send_page ) { // Sync LED buffer with ISSI chip buffer; currently unused
-    LED_pageBuffer.i2c_addr = 0xE8; // Chip 1
-    LED_pageBuffer.reg_addr = 0x24; // Brightness section
-    my_LED_write_page( (uint8_t*)&LED_pageBuffer, sizeof( LED_Buffer ), 0 );
+    LED_pageBuffer[0].i2c_addr = LED_MapCh1_Addr_define; // Chip 1
+    LED_pageBuffer[0].reg_addr = ISSI_LEDPwmRegStart;    // Brightness section
+    my_LED_write_page( (uint16_t*)&LED_pageBuffer[0], sizeof( LED_Buffer ) / 2, 0 /*page*/ );
   }
 } // my_LED_control
 
