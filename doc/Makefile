@@ -4,6 +4,9 @@
 
 .PHONY: html uml
 
+help:
+	@echo "make [html|uml]"
+
 html:
 	doxygen
 

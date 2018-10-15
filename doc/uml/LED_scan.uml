@@ -1,0 +1,62 @@
+'
+' LED_scan.uml
+'
+
+@startuml
+title LED_scan()
+start
+:Latency_start_time\n( ledLatencyResource )|
+
+if (LED_currentEvent) then (yes)
+ if (LED_currentEvent) then (< 150)
+  :led_enable_current = 0;
+  :Pixel_setAnimationControl\n( AnimationControl_WipePause )|
+ else
+  :led_enable_current = 1;
+  :Pixel_setAnimationControl\n( AnimationControl_Forward )|
+ endif
+ :LED_currentEvent = 0;
+endif
+
+if (LED_pause) then (yes)
+ (A)
+ detach
+endif
+
+if (LED_enable &&\n LED_enable_current ) then (no)
+ (A)
+ detach
+endif
+
+if (i2c_error) then (yes)
+ :i2c_reset|
+ :Pixel_FrameState = FrameState_Update;
+endif
+
+if (Pixel_FrameState) then (is FrameState_Sending)
+ (A)
+ detach
+endif
+
+if (Pixel_FrameState) then (isn't FrameState_Ready)
+ (A)
+ detach
+endif
+
+:duration = Time_duration( LED_timePrev );
+if (duration.ms) then (< LED_framerate)
+ (A)
+ detach
+endif
+
+if (LED_displayFPS) then (yes)
+ :print frame calculation;
+endif
+
+:Lower brightness by LED_brightness;
+:LED_timePrev = Time_now();
+
+(A)
+:Latency_end_time\n( ledLatencyResource )|
+stop
+@enduml

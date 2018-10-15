@@ -1,0 +1,85 @@
+'
+' build.uml
+'
+
+@startuml
+component ergodox_l_bash #LightBlue [
+controller/
+Keyboards/
+ergodox-l.bash
+]
+
+component ergodox_r_bash #LightBlue [
+controller/
+Keyboards/
+ergodox-r.bash
+]
+
+component ergodox_bash #LightBlue [
+controller/
+Keyboards/
+ergodox.bash
+]
+
+
+component scancode_map_kll [
+controller/
+Scan/
+Infinity_Ergodox/
+scancode_map.kll
+---
+]
+
+component leftHand_kll [
+controller/
+Scan/
+Infinity_Ergodox/
+leftHand.kll
+---
+]
+
+component slave1_kll [
+controller/
+Scan/
+Infinity_Ergodox/
+slave1.kll
+---
+]
+
+component rightHand_kll [
+controller/
+Scan/
+Infinity_Ergodox/
+rightHand.kll
+---
+]
+
+component R_load [
+controller/
+Keyboards/
+linux-gnu.ICED-R.gcc.ninja/
+load
+]
+
+component L_load [
+controller/
+Keyboards/
+linux-gnu.ICED-L.gcc.ninja/
+load
+]
+
+ergodox_l_bash <-- ergodox_bash : execute
+ergodox_r_bash <-- ergodox_bash : execute
+ergodox_l_bash --> L_load : generate
+ergodox_r_bash --> R_load : generate
+
+scancode_map_kll --* ergodox_l_bash : BaseMap
+leftHand_kll     --* ergodox_l_bash : BaseMap
+slave1_kll       --* ergodox_l_bash : BaseMap
+rightHand_kll    --* ergodox_l_bash : BaseMap
+
+scancode_map_kll --* ergodox_r_bash : BaseMap
+rightHand_kll    --* ergodox_r_bash : BaseMap
+slave1_kll       --* ergodox_r_bash : BaseMap
+leftHand_kll     --* ergodox_r_bash : BaseMap
+@enduml

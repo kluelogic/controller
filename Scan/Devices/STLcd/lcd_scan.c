@@ -98,8 +98,8 @@ CLIDict_Def( lcdCLIDict, "ST LCD Module Commands" ) = {
 static uint8_t stlcdLatencyResource;
 
 
-#include "my_lcd_scan.h"
-#include "my_lcd_scan_decl.c"
+// REVISIT #include "my_lcd_scan.h"
+// REVISIT #include "my_lcd_scan_decl.c"
 
 // ----- Interrupt Functions -----
 
@@ -389,7 +389,7 @@ inline void LCD_setup()
 
 	// Run LCD intialization sequence
 	LCD_initialize();
-#include "my_LCD_setup.c"
+// REVISIT #include "my_LCD_setup.c"
 
 	// Write default image to LCD
 	for ( uint8_t page = 0; page < LCD_TOTAL_VISIBLE_PAGES; page++ )
@@ -876,4 +876,4 @@ void cliFunc_lcdDisp( char* args )
 	}
 }
 
-#include "my_lcd_scan.c"
+// REVISIT #include "my_lcd_scan.c"

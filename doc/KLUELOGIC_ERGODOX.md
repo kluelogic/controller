@@ -1,5 +1,22 @@
 # All about KlueLogic ErgoDox
 
+## Build Keyboard with Docker
+```bash
+# build docker (do this once)
+cd controller/Dockerfiles
+sudo docker build -f Dockerfile.ubuntu -t controller.ubuntu .
+
+# build keyboard
+cd controller
+sudo docker run -it --rm -v "$(pwd):/controller" controller.ubuntu
+pipenv run pip install pip==18.0 # 18.1 won't work
+pipenv install
+pipenv shell
+./ergodox.bash
+```
+
+![build](uml/build.png)
+
 ## Keyboard Layout
 
 ### Layer 0 (`kll/layouts/my_config.kll`)
@@ -30,6 +47,7 @@ This layer is for register programming. A key press increments the value of corr
 
 ### LED scan (`Scan/Devices/ISSILed/led_scan.c`)
 ![LED_setup](uml/LED_setup.png)
+![LED_scan](uml/LED_scan.png)
 
 
 ## Tools
@@ -51,7 +69,7 @@ make uml
 #### [grip](https://github.com/joeyespo/grip)
 ```bash
 sudo apt install grip
-grip README_FIRST.md # then open http://localhost:6419
+grip KLUELOGIC_ERGODOX.md # then open http://localhost:6419
 ```
 
 ### File diff and merge - `meld`
