@@ -26,6 +26,15 @@ pipenv shell
 ### ErgoDox Switch ID
 ![switch_id](images/switch_id.png)
 
+### Scan Code
+![scan_code](images/scan_code.png)
+
+### USB Code (`Scan/Infinity_Ergodox/leftHand.kll`, `Scan/Infinity_Ergodox/rightHand.kll`)
+![usb_code](images/usb_code.png)
+
+### Key Positioning (`Scan/Infinity_Ergodox/leftHand.kll`, `Scan/Infinity_Ergodox/rightHand.kll`)
+![key_pos](images/key_pos.png)
+
 ### Layer 0 (`kll/layouts/my_config.kll`)
 Deviation from the original ErgoDox layout is shown in _**bold italic**_.
 

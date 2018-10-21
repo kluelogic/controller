@@ -23,6 +23,7 @@ ergodox.bash
 
 
 component scancode_map_kll [
+<b>BaseMap #1
 controller/
 Scan/
 Infinity_Ergodox/
@@ -31,27 +32,35 @@ scancode_map.kll
 ]
 
 component leftHand_kll [
+<b>BaseMap #2
 controller/
 Scan/
 Infinity_Ergodox/
 leftHand.kll
 ---
+Scan Code to USB Code
+Key Positioning
 ]
 
 component slave1_kll [
+<b>BaseMap #3
 controller/
 Scan/
 Infinity_Ergodox/
 slave1.kll
 ---
+ConnectId = 1
 ]
 
 component rightHand_kll [
+<b>BaseMap #4
 controller/
 Scan/
 Infinity_Ergodox/
 rightHand.kll
 ---
+Scan Code to USB Code
+Key Positioning
 ]
 
 component R_load [
@@ -73,13 +82,13 @@ ergodox_r_bash <-- ergodox_bash : execute
 ergodox_l_bash --> L_load : generate
 ergodox_r_bash --> R_load : generate
 
-scancode_map_kll --* ergodox_l_bash : BaseMap
-leftHand_kll     --* ergodox_l_bash : BaseMap
-slave1_kll       --* ergodox_l_bash : BaseMap
-rightHand_kll    --* ergodox_l_bash : BaseMap
+scancode_map_kll --* ergodox_l_bash
+leftHand_kll     --* ergodox_l_bash
+slave1_kll       --* ergodox_l_bash
+rightHand_kll    --* ergodox_l_bash
 
-scancode_map_kll --* ergodox_r_bash : BaseMap
-rightHand_kll    --* ergodox_r_bash : BaseMap
-slave1_kll       --* ergodox_r_bash : BaseMap
-leftHand_kll     --* ergodox_r_bash : BaseMap
+scancode_map_kll --* ergodox_r_bash
+rightHand_kll    --* ergodox_r_bash
+slave1_kll       --* ergodox_r_bash
+leftHand_kll     --* ergodox_r_bash
 @enduml
