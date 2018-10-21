@@ -17,6 +17,10 @@ pipenv shell
 
 ![build](uml/build.png)
 
+## Keyboard Layout Language
+
+[KLL Spec](https://github.com/kiibohd/kll-spec)
+
 ## Keyboard Layout
 
 ### Layer 0 (`kll/layouts/my_config.kll`)
