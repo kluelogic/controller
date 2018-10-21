@@ -23,6 +23,9 @@ pipenv shell
 
 ## Keyboard Layout
 
+### ErgoDox Switch ID
+![switch_id](images/switch_id.png)
+
 ### Layer 0 (`kll/layouts/my_config.kll`)
 Deviation from the original ErgoDox layout is shown in _**bold italic**_.
 
