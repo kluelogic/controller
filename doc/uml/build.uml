@@ -8,10 +8,10 @@ Keyboards/
 ergodox-l.bash
 ]
 
-component ergodox_r_bash #LightBlue [
-Keyboards/
-ergodox-r.bash
-]
+'component ergodox_r_bash #LightBlue [
+'Keyboards/
+'ergodox-r.bash
+']
 
 component ergodox_bash #Pink [
 Keyboards/
@@ -109,11 +109,11 @@ infinity_ergodox/
 iced_numpad.kll
 ]
 
-component R_load [
-Keyboards/
-linux-gnu.ICED-R.gcc.ninja/
-load
-]
+'component R_load [
+'Keyboards/
+'linux-gnu.ICED-R.gcc.ninja/
+'load
+']
 
 component L_load [
 Keyboards/
@@ -121,20 +121,21 @@ linux-gnu.ICED-L.gcc.ninja/
 load
 ]
 
-ergodox_l_bash <-- ergodox_bash : execute
-ergodox_r_bash <-- ergodox_bash : execute
+ergodox_bash -up-> ergodox_l_bash: execute
 ergodox_l_bash --> L_load : generate
-ergodox_r_bash --> R_load : generate
 
-scancode_map_kll   --* ergodox_l_bash
-leftHand_kll       --* ergodox_l_bash
-slave1_kll         --* ergodox_l_bash
-rightHand_kll      --* ergodox_l_bash
-all_leds_kll       --* ergodox_l_bash
-mdergo1Overlay_kll --* ergodox_l_bash
-lcdFuncMap_kll     --* ergodox_l_bash
-iced_func_kll      --* ergodox_l_bash
-iced_numpad_kll    --* ergodox_l_bash
+'ergodox_r_bash <-- ergodox_bash : execute
+'ergodox_r_bash --> R_load : generate
+
+scancode_map_kll     --* ergodox_l_bash
+leftHand_kll         --* ergodox_l_bash
+slave1_kll           --* ergodox_l_bash
+rightHand_kll        --* ergodox_l_bash
+all_leds_kll          -* ergodox_l_bash
+mdergo1Overlay_kll    -* ergodox_l_bash
+lcdFuncMap_kll        -* ergodox_l_bash
+iced_numpad_kll -right-* ergodox_l_bash
+iced_func_kll   -right-* ergodox_l_bash
 
 'scancode_map_kll --* ergodox_r_bash
 'rightHand_kll    --* ergodox_r_bash
