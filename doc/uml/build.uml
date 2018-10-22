@@ -4,47 +4,48 @@
 
 @startuml
 component ergodox_l_bash #LightBlue [
-controller/
 Keyboards/
 ergodox-l.bash
 ]
 
 component ergodox_r_bash #LightBlue [
-controller/
 Keyboards/
 ergodox-r.bash
 ]
 
-component ergodox_bash #LightBlue [
-controller/
+component ergodox_bash #Pink [
 Keyboards/
 ergodox.bash
 ]
 
-
 component scancode_map_kll [
 <b>BaseMap #1
-controller/
 Scan/
 Infinity_Ergodox/
 scancode_map.kll
 ---
+ISSI_Chip_31FL3731 = 1
+ISSI_Chips = 1
+ISSI_I2C_Buses = 1
+LED_BufferStruct
+ISSILedMask1
+Pixel Mapping
+STLcdDefaultImage
 ]
 
 component leftHand_kll [
 <b>BaseMap #2
-controller/
 Scan/
 Infinity_Ergodox/
 leftHand.kll
 ---
+<b>Master
 Scan Code to USB Code
 Key Positioning
 ]
 
 component slave1_kll [
 <b>BaseMap #3
-controller/
 Scan/
 Infinity_Ergodox/
 slave1.kll
@@ -54,24 +55,67 @@ ConnectId = 1
 
 component rightHand_kll [
 <b>BaseMap #4
-controller/
 Scan/
 Infinity_Ergodox/
 rightHand.kll
 ---
+<b>Slave
 Scan Code to USB Code
 Key Positioning
 ]
 
+component all_leds_kll [
+<b>DefaultMap #1
+kll/
+kll/
+layouts/
+infinity_ergodox/
+all-leds.kll
+]
+
+component mdergo1Overlay_kll [
+<b>DefaultMap #2
+kll/
+kll/
+layouts/
+infinity_ergodox/
+mdergo1Overlay.kll
+]
+
+component lcdFuncMap_kll [
+<b>DefaultMap #3
+kll/
+kll/
+layouts/
+infinity_ergodox/
+lcdFuncMap.kll
+]
+
+component iced_func_kll [
+<b>PartialMaps<1>
+kll/
+kll/
+layouts/
+infinity_ergodox/
+iced_func.kll
+]
+
+component iced_numpad_kll [
+<b>PartialMaps<2>
+kll/
+kll/
+layouts/
+infinity_ergodox/
+iced_numpad.kll
+]
+
 component R_load [
-controller/
 Keyboards/
 linux-gnu.ICED-R.gcc.ninja/
 load
 ]
 
 component L_load [
-controller/
 Keyboards/
 linux-gnu.ICED-L.gcc.ninja/
 load
@@ -82,13 +126,19 @@ ergodox_r_bash <-- ergodox_bash : execute
 ergodox_l_bash --> L_load : generate
 ergodox_r_bash --> R_load : generate
 
-scancode_map_kll --* ergodox_l_bash
-leftHand_kll     --* ergodox_l_bash
-slave1_kll       --* ergodox_l_bash
-rightHand_kll    --* ergodox_l_bash
+scancode_map_kll   --* ergodox_l_bash
+leftHand_kll       --* ergodox_l_bash
+slave1_kll         --* ergodox_l_bash
+rightHand_kll      --* ergodox_l_bash
+all_leds_kll       --* ergodox_l_bash
+mdergo1Overlay_kll --* ergodox_l_bash
+lcdFuncMap_kll     --* ergodox_l_bash
+iced_func_kll      --* ergodox_l_bash
+iced_numpad_kll    --* ergodox_l_bash
 
-scancode_map_kll --* ergodox_r_bash
-rightHand_kll    --* ergodox_r_bash
-slave1_kll       --* ergodox_r_bash
-leftHand_kll     --* ergodox_r_bash
+'scancode_map_kll --* ergodox_r_bash
+'rightHand_kll    --* ergodox_r_bash
+'slave1_kll       --* ergodox_r_bash
+'leftHand_kll     --* ergodox_r_bash
+
 @enduml
