@@ -321,8 +321,6 @@ void main()
 #elif defined(_sam_)
 	if (    // PIN  (External Reset Pin/Switch)
 		(REG_RSTC_SR & RSTC_SR_RSTTYP_Msk) == RSTC_SR_RSTTYP_UserReset
-		// WDOG (Watchdog timeout)
-		|| (REG_RSTC_SR & RSTC_SR_RSTTYP_Msk) == RSTC_SR_RSTTYP_WatchdogReset
 		// Blank flash check
 		|| _app_rom == 0xffffffff
 		// Software reset
@@ -341,8 +339,12 @@ void main()
 		WDT->WDT_MR = WDT_MR_WDV(1000000 / WDT_TICK_US) | WDT_MR_WDD(WDT_MAX_VALUE) | WDT_MR_WDFIEN | WDT_MR_WDDBGHLT | WDT_MR_WDIDLEHLT;
 		//WDT->WDT_MR = WDT_MR_WDDIS;
 #else
-		WDT->WDT_MR = WDT_MR_WDV(1000000 / WDT_TICK_US) | WDT_MR_WDD(WDT_MAX_VALUE) | WDT_MR_WDRSTEN | WDT_MR_WDDBGHLT | WDT_MR_WDIDLEHLT;
+		WDT->WDT_MR = WDT_MR_WDV(1000000 / WDT_TICK_US) | WDT_MR_WDD(WDT_MAX_VALUE) | WDT_MR_WDRSTEN | WDT_MR_WDRPROC | WDT_MR_WDDBGHLT | WDT_MR_WDIDLEHLT;
 #endif
+
+		// Cleared by valid firmware
+		for ( int pos = 0; pos <= sizeof(sys_reset_to_loader_magic)/4; pos++ )
+			GPBR->SYS_GPBR[ pos ] = ((uint32_t*)sys_reset_to_loader_magic)[ pos ];
 
 		// Firmware mode
 		print( NL "==> Booting Firmware..." );
@@ -383,16 +385,23 @@ void main()
 	printHex( CHIPID->CHIPID_EXID );
 
 	// Bootloader Entry Reasons
-	print( NL " GeneralReset - ");
-	printHex( REG_RSTC_SR & RSTC_SR_RSTTYP_Msk & RSTC_SR_RSTTYP_GeneralReset );
-	print( NL " BackupReset - ");
-	printHex( REG_RSTC_SR & RSTC_SR_RSTTYP_Msk & RSTC_SR_RSTTYP_BackupReset );
-	print( NL " WatchdogReset - ");
-	printHex( REG_RSTC_SR & RSTC_SR_RSTTYP_Msk & RSTC_SR_RSTTYP_WatchdogReset );
-	print( NL " SoftwareReset - ");
-	printHex( REG_RSTC_SR & RSTC_SR_RSTTYP_Msk & RSTC_SR_RSTTYP_SoftwareReset );
-	print( NL " UserReset - ");
-	printHex( REG_RSTC_SR & RSTC_SR_RSTTYP_Msk & RSTC_SR_RSTTYP_UserReset );
+	switch ( REG_RSTC_SR & RSTC_SR_RSTTYP_Msk ) {
+	case RSTC_SR_RSTTYP_GeneralReset:
+		print( NL " GeneralReset");
+		break;
+	case RSTC_SR_RSTTYP_BackupReset:
+		print( NL " BackupReset");
+		break;
+	case RSTC_SR_RSTTYP_WatchdogReset:
+		print( NL " WatchdogReset");
+		break;
+	case RSTC_SR_RSTTYP_SoftwareReset:
+		print( NL " SoftwareReset");
+		break;
+	case RSTC_SR_RSTTYP_UserReset:
+		print( NL " UserReset");
+		break;
+	}
 	print( NL " _app_rom - ");
 	printHex( (uint32_t)_app_rom );
 	print( NL " Soft Rst - " );

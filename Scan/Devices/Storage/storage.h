@@ -1,4 +1,4 @@
-/* Copyright (C) 2014-2016 by Jacob Alexander
+/* Copyright (C) 2018 by Jacob Alexander and Rowan Decker
  *
  * This file is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,17 +23,7 @@
 
 
 
-// ----- Variables -----
-
-extern uint8_t LED_FrameBuffersReady;
-extern uint8_t LED_brightness;
-
-
-
 // ----- Functions -----
 
-void LED_setup();
-void LED_scan();
-
-void LED_currentChange( unsigned int current );
+void Storage_init();
 

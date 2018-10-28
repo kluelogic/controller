@@ -1,6 +1,46 @@
 # All about KlueLogic ErgoDox
 
-## Build Keyboard with Docker
+## Clone
+```bash
+cd sandbox
+git clone https://github.com/kluelogic/controller.git
+
+cd controller
+git clone https://github.com/kluelogic/kll.git
+```
+
+## Setting the upstream for a fork (do this once)
+```bash
+cd controller
+git remote -v
+git remote add upstream https://github.com/kiibohd/controller.git
+
+cd kll
+git remote -v
+git remote add upstream https://github.com/kiibohd/kll.git
+```
+
+## Syncing a fork
+```bash
+cd controller
+git remote -v # to make sure upstreams are set like this:
+
+# origin	https://github.com/kluelogic/controller.git (fetch)
+# origin	https://github.com/kluelogic/controller.git (push)
+# upstream	https://github.com/kiibohd/controller.git (fetch)
+# upstream	https://github.com/kiibohd/controller.git (push)
+
+git fetch upstream
+git checkout master
+git merge upstream/master
+
+cd kll
+git fetch upstream
+git checkout master
+git merge upstream/master
+```
+
+## Build keyboard with Docker
 ```bash
 # build docker (do this once)
 cd controller/Dockerfiles

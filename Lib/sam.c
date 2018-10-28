@@ -62,6 +62,8 @@ extern uint32_t _estack;
 // Must be read from flash using ReadUniqueID()
 uint32_t sam_UniqueId[4];
 
+uintptr_t __stack_chk_guard = 0xdeadbeef;
+
 //__attribute__((__aligned__(TRACE_BUFFER_SIZE * sizeof(uint32_t)))) uint32_t mtb[TRACE_BUFFER_SIZE];
 
 // ----- Function Declarations -----
@@ -93,6 +95,20 @@ void fault_isr()
 #endif
 }
 
+
+// Stack Overflow Interrupt
+void __stack_chk_fail(void)
+{
+	print("Segfault!" NL );
+#if defined(DEBUG) && defined(JLINK)
+	asm volatile("BKPT #01");
+#else
+	fault_isr();
+#endif
+}
+
+
+// Default ISR if not used
 void unused_isr()
 {
 #if defined(DEBUG) && defined(JLINK)
@@ -116,6 +132,21 @@ void systick_default_isr()
 #if !defined(_bootloader_)
 	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
 	DWT->CTRL &= DWT_CTRL_CYCCNTENA_Msk;
+	// Check to see if SysTick is being starved by another IRQ
+	// 12 cycle IRQ latency (plus some extra)
+	// XXX (HaaTa) There seems to be a CPU bug where you need to wait some clock cycles before you can
+	// clear the CYCCNT register on SAM4S (this wasn't the case on Kinetis)
+	// TODO (HaaTa) Determine what is starving IRQs by about 2000 cycles
+	if ( DWT->CYCCNT > F_CPU / 1000 + 30 )
+	{
+		/* XXX (HaaTa) The printing of this message is causing LED buffers to get clobbered (likely due to frame overflows)
+		erro_print("SysTick is being starved by another IRQ...");
+		printInt32( DWT->CYCCNT );
+		print(" vs. ");
+		printInt32( F_CPU / 1000 );
+		print(NL);
+		*/
+	}
 	DWT->CYCCNT = 0;
 	DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 #endif
@@ -185,8 +216,13 @@ void UDP_Handler    ( void ) __attribute__ ((weak, alias("unused_isr")));
 
 
 void WDT_Handler() {
+	print("WDT!" NL );
+#if defined(DEBUG) && defined(JLINK)
 	__asm volatile("BKPT #01");
+#else
+	SOFTWARE_RESET();
 	for( ;; );
+#endif
 }
 
 /* Exception Table */
@@ -313,12 +349,44 @@ int memcmp( const void *a, const void *b, unsigned int len )
 
 void *memcpy( void *dst, const void *src, unsigned int len )
 {
+// Fast memcpy (Cortex-M4 only), adapted from:
+// https://cboard.cprogramming.com/c-programming/154333-fast-memcpy-alternative-32-bit-embedded-processor-posted-just-fyi-fwiw.html#post1149163
+// Cortex-M4 can do unaligned accesses, even for 32-bit values
+// Uses 32-bit values to do copies instead of 8-bit (should effectively speed up memcpy by 3x)
+#if defined(_cortex_m4_)
+	uint32_t i;
+	uint32_t *pLongSrc;
+	uint32_t *pLongDest;
+	uint32_t numLongs = len / 4;
+	uint32_t endLen = len & 0x03;
+
+	// Convert byte addressing to long addressing
+	pLongSrc = (uint32_t*) src;
+	pLongDest = (uint32_t*) dst;
+
+	// Copy long values, disregarding any 32-bit alignment issues
+	for ( i = 0; i < numLongs; i++ )
+	{
+		*pLongDest++ = *pLongSrc++;
+	}
+
+	// Convert back to byte addressing
+	uint8_t *srcbuf = (uint8_t*) pLongSrc;
+	uint8_t *dstbuf = (uint8_t*) pLongDest;
+
+	// Copy trailing bytes byte-by-byte
+	for (; endLen > 0; --endLen, ++dstbuf, ++srcbuf)
+		*dstbuf = *srcbuf;
+
+	return (dst);
+#else
 	char *dstbuf = dst;
 	const char *srcbuf = src;
 
 	for (; len > 0; --len, ++dstbuf, ++srcbuf)
 		*dstbuf = *srcbuf;
 	return (dst);
+#endif
 }
 
 // Reads Unique Id into sam_UniqueId buffer
@@ -350,6 +418,9 @@ uint32_t ReadUniqueID()
 __attribute__ ((section(".startup")))
 void ResetHandler()
 {
+	// Not locked up... Reset the watchdog timer
+	WDT->WDT_CR = WDT_CR_KEY_PASSWD | WDT_CR_WDRSTT;
+
 	uint32_t *pSrc, *pDest;
 	/* Initialize the relocate segment */
 	pSrc = &_etext;
@@ -452,7 +523,7 @@ void ResetHandler()
 	// Initialize the SysTick counter
 	SysTick->LOAD = (F_CPU / 1000) - 1;
 	SysTick->VAL = 0;
-	SysTick->CALIB = F_CPU / 8;
+	SysTick->CALIB = F_CPU / 1000 / 8;
 	SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_TICKINT_Msk | SysTick_CTRL_ENABLE_Msk;
 
 	// Enable IRQs
@@ -464,6 +535,9 @@ void ResetHandler()
 #if !defined(_bootloader_)
 	init_errorLED();
 	errorLED(0);
+
+	for ( int pos = 0; pos <= sizeof(sys_reset_to_loader_magic)/sizeof(GPBR->SYS_GPBR[0]); pos++ )
+		GPBR->SYS_GPBR[ pos ] = 0x00000000;
 #endif
 	// Read Unique ID from flash
 	ReadUniqueID();

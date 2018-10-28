@@ -15,6 +15,9 @@ Date = 2018-09-15;
 #  3: Turn off all leds
 #  4: Turn on all leds
 #  5: Toggle all leds
+#  6: Set framerate (1000 / value = fps) i.e. ms per frame
+#  7: Increase fps (1000 / value = fps)
+#  8: Decrease fps (1000 / value = fps)
 # Amount -> 0 -> 255
 ledControl => LED_control_capability( mode : 1, amount : 1 );
 
@@ -91,6 +94,11 @@ typedef struct LED_Buffer {
 	uint16_t buffer[144];
 } LED_Buffer;
 volatile LED_Buffer LED_pageBuffer[ ISSI_Chips_define ];
+
+typedef struct KLL_Buffer {
+	uint16_t buffer[144];
+} KLL_Buffer;
+volatile KLL_Buffer KLL_pageBuffer[ ISSI_Chips_define ];
 ";
 
 # FPS Target

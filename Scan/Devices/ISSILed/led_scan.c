@@ -20,6 +20,7 @@
 #include <Lib/ScanLib.h>
 
 // Project Includes
+#include <Lib/storage.h>
 #include <cli.h>
 #include <kll_defs.h>
 #include <latency.h>
@@ -181,6 +182,9 @@ void cliFunc_ledReset ( char* args );
 void cliFunc_ledSet   ( char* args );
 void cliFunc_ledToggle( char* args );
 
+void LED_loadConfig();
+void LED_saveConfig();
+void LED_printConfig();
 
 
 // ----- Variables -----
@@ -201,6 +205,28 @@ CLIDict_Def( ledCLIDict, "ISSI LED Module Commands" ) = {
 	{ 0, 0, 0 } // Null entry for dictionary end
 };
 
+#if Storage_Enable_define == 1
+// Storage Module
+typedef struct {
+	uint8_t brightness;
+} LedConfig;
+
+static LedConfig defaults = {
+	.brightness = ISSI_Global_Brightness_define
+};
+
+static LedConfig settings;
+
+static StorageModule LedStorage = {
+	.name = "LED Scan",
+	.settings = &settings,
+	.defaults = &defaults,
+	.size = sizeof(LedConfig),
+	.onLoad = LED_loadConfig,
+	.onSave = LED_saveConfig,
+	.display = LED_printConfig
+};
+#endif
 
 #if ISSI_Chip_31FL3731_define == 1
 // Emulated brightness buffer
@@ -649,6 +675,9 @@ inline void LED_setup()
 {
 	// Register Scan CLI dictionary
 	CLI_registerDictionary( ledCLIDict, ledCLIDictName );
+#if Storage_Enable_define == 1
+	Storage_registerModule(&LedStorage);
+#endif
 
 	// Zero out FPS time
 	LED_timePrev = Time_now();
@@ -1009,6 +1038,10 @@ typedef enum LedControl {
 	LedControl_off                     = 3,
 	LedControl_on                      = 4,
 	LedControl_toggle                  = 5,
+	// FPS Control - with argument
+	LedControl_set_fps                 = 6,
+	LedControl_increase_fps            = 7,
+	LedControl_decrease_fps            = 8,
 } LedControl;
 
 void LED_control( LedControl control, uint8_t arg )
@@ -1056,6 +1089,24 @@ void LED_control( LedControl control, uint8_t arg )
 
 	case LedControl_toggle:
 		LED_enable = !LED_enable;
+		return;
+
+	case LedControl_set_fps:
+		LED_displayFPS = (uint32_t)arg;
+		return;
+
+	case LedControl_increase_fps:
+		if ( LED_displayFPS < 0xFF )
+		{
+			LED_displayFPS += arg;
+		}
+		return;
+
+	case LedControl_decrease_fps:
+		if ( LED_displayFPS > 1 )
+		{
+			LED_displayFPS -= arg;
+		}
 		return;
 	}
 
@@ -1217,29 +1268,8 @@ void cliFunc_ledToggle( char* args )
 	LED_enable = !LED_enable;
 }
 
-void cliFunc_ledSet( char* args )
-{
-	print( NL ); // No \r\n by default after the command is entered
-
-	char* curArgs;
-	char* arg1Ptr;
-	char* arg2Ptr = args;
-
-	// Process speed argument if given
-	curArgs = arg2Ptr;
-	CLI_argumentIsolation( curArgs, &arg1Ptr, &arg2Ptr );
-
-	// Reset brightness
-	if ( *arg1Ptr == '\0' )
-	{
-		LED_brightness = ISSI_Global_Brightness_define;
-	}
-	else
-	{
-		LED_brightness = numToInt( arg1Ptr );
-	}
-
-	info_msg("LED Brightness Set");
+void LED_setBrightness(uint8_t brightness) {
+	LED_brightness = brightness;
 
 #if ISSI_Chip_31FL3733_define || ISSI_Chip_31FL3732_define
 	// Update brightness
@@ -1259,4 +1289,47 @@ void cliFunc_ledSet( char* args )
 #endif
 }
 
+void cliFunc_ledSet( char* args )
+{
+	print( NL ); // No \r\n by default after the command is entered
+
+	char* curArgs;
+	char* arg1Ptr;
+	char* arg2Ptr = args;
+
+	// Process speed argument if given
+	curArgs = arg2Ptr;
+	CLI_argumentIsolation( curArgs, &arg1Ptr, &arg2Ptr );
+
+	// Reset brightness
+	if ( *arg1Ptr == '\0' )
+	{
+		LED_setBrightness( ISSI_Global_Brightness_define );
+	}
+	else
+	{
+		LED_setBrightness( numToInt(arg1Ptr) );
+	}
+
+	info_msg("LED Brightness Set");
+
+}
+
+#if Storage_Enable_define == 1
+void LED_loadConfig() {
+	LED_setBrightness(settings.brightness);
+}
+
+void LED_saveConfig() {
+	settings.brightness = LED_brightness;
+}
+
 // REVISIT #include "my_led_scan.c"
+
+void LED_printConfig() {
+	print(" \033[35mBrightness\033[0m    ");
+	printInt8(settings.brightness);
+	print( NL );
+}
+#endif
+

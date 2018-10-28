@@ -221,11 +221,14 @@ TriggerMacroVote Trigger_evalShortTriggerMacroVote_DRO( ScheduleState state )
 
 
 // Votes on the given key vs. guide, short macros
-TriggerMacroVote Trigger_evalShortTriggerMacroVote( TriggerEvent *event, TriggerGuide *guide )
+TriggerMacroVote Trigger_evalShortTriggerMacroVote( TriggerEvent *event, TriggerGuide *guide, TriggerMacroVote *cur_vote )
 {
 	// Lookup full index
 	var_uint_t guide_index = KLL_TriggerIndex_loopkup( guide->type, guide->scanCode );
 	var_uint_t event_index = KLL_TriggerIndex_loopkup( event->type, event->index );
+
+	// Return value
+	TriggerMacroVote vote = TriggerMacroVote_Invalid;
 
 	// Depending on key type
 	switch ( guide->type )
@@ -259,10 +262,35 @@ TriggerMacroVote Trigger_evalShortTriggerMacroVote( TriggerEvent *event, Trigger
 			)
 		)
 		{
-			return Trigger_evalShortTriggerMacroVote_PHRO( event->state );
+			vote = Trigger_evalShortTriggerMacroVote_PHRO( event->state );
+			break;
+		}
+
+		vote = TriggerMacroVote_DoNothing;
+		break;
+
+	/*
+	// LED State Type
+	case TriggerType_LED1:
+		// XXX (HaaTa) This is an initial version of State Scheduling
+		//             For any state match that is not ScheduleType_A, set to ScheduleType_A
+		//             as this will indicate a pulse to the capability.
+		if (
+			guide_index == event_index &&
+			guide->type == event->type
+		)
+		{
+			// When state scheduling is specified
+			// TODO (HaaTa); We should probably move to another state type for "auto" schedule types
+			if ( guide->state == event->state && guide->state != ScheduleType_A )
+			{
+				return Trigger_evalShortTriggerMacroVote_PHRO( ScheduleType_A );
+			}
+			//return Trigger_evalShortTriggerMacroVote_PHRO( event->state );
 		}
 
 		return TriggerMacroVote_DoNothing;
+	*/
 
 	// Analog State Type
 	case TriggerType_Analog1:
@@ -284,10 +312,32 @@ TriggerMacroVote Trigger_evalShortTriggerMacroVote( TriggerEvent *event, Trigger
 			guide->state == event->state
 		)
 		{
-			return Trigger_evalShortTriggerMacroVote_DRO( event->state );
+			vote = Trigger_evalShortTriggerMacroVote_DRO( event->state );
+			break;
 		}
 
-		return TriggerMacroVote_DoNothing;
+		vote = TriggerMacroVote_DoNothing;
+		break;
+
+	// Rotation State Type
+	case TriggerType_Rotation1:
+		// Rotation triggers use state as the index, rather than encoding a type of action
+		// There is only "activated" state for rotations, which is only sent once
+		// This makes rotations not so useful for long macros
+		// (though it may be possible to implement it if there is demand)
+		if (
+			guide_index == event_index &&
+			guide->type == event->type &&
+			guide->state == event->state // <== This is the rotation position
+		)
+		{
+			// Only ever "Pressed", other states are not used with rotations
+			vote = Trigger_evalShortTriggerMacroVote_PHRO( ScheduleType_P );
+			break;
+		}
+
+		vote = TriggerMacroVote_DoNothing;
+		break;
 
 	// Invalid State Type
 	default:
@@ -295,8 +345,21 @@ TriggerMacroVote Trigger_evalShortTriggerMacroVote( TriggerEvent *event, Trigger
 		break;
 	}
 
-	// XXX Shouldn't reach here
-	return TriggerMacroVote_Invalid;
+	// If this is a combo macro, make a preference for TriggerMacroVote_Pass instead of TriggerMacroVote_PassRelease
+	if ( *cur_vote != TriggerMacroVote_Invalid && event_index == guide_index )
+	{
+		// Make sure the votes are different and one of them are Pass
+		if ( *cur_vote != vote
+			&& ( *cur_vote == TriggerMacroVote_Pass || vote == TriggerMacroVote_Pass )
+			&& ( *cur_vote == TriggerMacroVote_PassRelease || vote == TriggerMacroVote_PassRelease )
+		)
+		{
+			*cur_vote = TriggerMacroVote_Pass;
+			vote = TriggerMacroVote_Pass;
+		}
+	}
+
+	return vote;
 }
 
 
@@ -378,7 +441,7 @@ TriggerMacroVote Trigger_evalLongTriggerMacroVote_DRO( ScheduleState state, uint
 
 // Votes on the given key vs. guide, long macros
 // A long macro is defined as a guide with more than 1 combo
-TriggerMacroVote Trigger_evalLongTriggerMacroVote( TriggerEvent *event, TriggerGuide *guide )
+TriggerMacroVote Trigger_evalLongTriggerMacroVote( TriggerEvent *event, TriggerGuide *guide, TriggerMacroVote *cur_vote )
 {
 	// Lookup full index
 	var_uint_t guide_index = KLL_TriggerIndex_loopkup( guide->type, guide->scanCode );
@@ -458,6 +521,16 @@ TriggerMacroVote Trigger_evalLongTriggerMacroVote( TriggerEvent *event, TriggerG
 
 		break;
 
+	// Rotation State Type
+	case TriggerType_Rotation1:
+		// Rotation triggers use state as the index, rather than encoding a type of action
+		// There is only "activated" state for rotations, which is only sent once
+		// This makes rotations not so useful for long macros
+		// (though it may be possible to implement it if there is demand)
+		// TODO
+		erro_print("Rotation State Type (Long Macros) - Not implemented...");
+		break;
+
 	// Invalid State Type
 	default:
 		erro_print("Invalid State Type. This is a bug.");
@@ -500,8 +573,8 @@ TriggerMacroVote Trigger_overallVote(
 
 			// Vote on triggers
 			vote |= long_trigger_macro
-				? Trigger_evalLongTriggerMacroVote( triggerInfo, guide )
-				: Trigger_evalShortTriggerMacroVote( triggerInfo, guide );
+				? Trigger_evalLongTriggerMacroVote( triggerInfo, guide, &overallVote )
+				: Trigger_evalShortTriggerMacroVote( triggerInfo, guide, &overallVote );
 		}
 
 		// Mask out incorrect votes, if anything indicates a pass
@@ -647,7 +720,9 @@ TriggerMacroEval Trigger_evalTriggerMacro( var_uint_t triggerMacroIndex )
 		{
 		case 1:
 			Trigger_showTriggerMacroVote( overallVote, long_trigger_macro );
-			print( NL );
+			print(" TriggerMacroList[");
+			printInt16( triggerMacroIndex );
+			print("]"NL);
 			break;
 		}
 
