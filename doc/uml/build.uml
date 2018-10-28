@@ -64,7 +64,7 @@ Scan Code to USB Code
 Key Positioning
 ]
 
-component all_leds_kll [
+component all_leds_kll #Gray [
 <b>DefaultMap #1
 kll/
 kll/
@@ -74,7 +74,7 @@ all-leds.kll
 ]
 
 'component mdergo1Overlay_kll [
-'<b>DefaultMap #2
+'<b>DefaultMap #1
 'kll/
 'kll/
 'layouts/
@@ -89,9 +89,11 @@ kll/
 layouts/
 infinity_ergodox/
 my_layer0.kll
+---
+Layer-0 Key Mapping
 ]
 
-component lcdFuncMap_kll [
+component lcdFuncMap_kll #Gray [
 <b>DefaultMap #3
 kll/
 kll/
@@ -100,7 +102,7 @@ infinity_ergodox/
 lcdFuncMap.kll
 ]
 
-component iced_func_kll [
+component iced_func_kll #Gray [
 <b>PartialMaps<1>
 kll/
 kll/
@@ -109,13 +111,31 @@ infinity_ergodox/
 iced_func.kll
 ]
 
-component iced_numpad_kll [
+component iced_numpad_kll #Gray [
 <b>PartialMaps<2>
 kll/
 kll/
 layouts/
 infinity_ergodox/
 iced_numpad.kll
+]
+
+component my_layer1_kll #Pink [
+<b>PartialMaps<1>
+kll/
+kll/
+layouts/
+infinity_ergodox/
+my_layer1.kll
+]
+
+component my_layer2_kll #Pink [
+<b>PartialMaps<2>
+kll/
+kll/
+layouts/
+infinity_ergodox/
+my_layer2.kll
 ]
 
 'component R_load [
@@ -146,6 +166,8 @@ my_layer0_kll         -* ergodox_l_bash
 lcdFuncMap_kll        -* ergodox_l_bash
 iced_numpad_kll -right-* ergodox_l_bash
 iced_func_kll   -right-* ergodox_l_bash
+my_layer1_kll   -right-* ergodox_l_bash
+my_layer2_kll   -right-* ergodox_l_bash
 
 'scancode_map_kll --* ergodox_r_bash
 'rightHand_kll    --* ergodox_r_bash

@@ -43,14 +43,14 @@ Deviation from the original ErgoDox layout is shown in _**bold italic**_.
 
 ![layer0](images/layer0.png)
 
-### Layer 1 (`kll/layouts/my_layer1.kll`)
+### Layer 1 (`kll/kll/layouts/infinity_ergodox/my_layer1.kll`)
 This layer pulls in the overflowed keys of layer 0. Deviation from the original ErgoDox layout is shown in _**bold italic**_.
 
 NOTE: **List all keys in relation to the original ErgoDox layout**, not in relation to my layer 0.
 
 ![layer1](images/layer1.png)
 
-### Layer 2 (`kll/layouts/my_layer2.kll`)
+### Layer 2 (`kll/kll/layouts/infinity_ergodox/my_layer2.kll`)
 This layer is for register programming. A key press increments the value of corresponding register.
 
 ![layer2](images/layer2.png)
