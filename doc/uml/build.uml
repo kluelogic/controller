@@ -3,17 +3,17 @@
 '
 
 @startuml
-component ergodox_l_bash #LightBlue [
+component ergodox_l_bash #Pink [
 Keyboards/
 ergodox-l.bash
 ]
 
-'component ergodox_r_bash #LightBlue [
+'component ergodox_r_bash #Pink [
 'Keyboards/
 'ergodox-r.bash
 ']
 
-component ergodox_bash #Pink [
+component ergodox_bash [
 Keyboards/
 ergodox.bash
 ]
@@ -73,13 +73,22 @@ infinity_ergodox/
 all-leds.kll
 ]
 
-component mdergo1Overlay_kll [
+'component mdergo1Overlay_kll [
+'<b>DefaultMap #2
+'kll/
+'kll/
+'layouts/
+'infinity_ergodox/
+'mdergo1Overlay.kll
+']
+
+component my_layer0_kll #Pink [
 <b>DefaultMap #2
 kll/
 kll/
 layouts/
 infinity_ergodox/
-mdergo1Overlay.kll
+my_layer0.kll
 ]
 
 component lcdFuncMap_kll [
@@ -132,7 +141,8 @@ leftHand_kll         --* ergodox_l_bash
 slave1_kll           --* ergodox_l_bash
 rightHand_kll        --* ergodox_l_bash
 all_leds_kll          -* ergodox_l_bash
-mdergo1Overlay_kll    -* ergodox_l_bash
+'mdergo1Overlay_kll   -* ergodox_l_bash
+my_layer0_kll         -* ergodox_l_bash
 lcdFuncMap_kll        -* ergodox_l_bash
 iced_numpad_kll -right-* ergodox_l_bash
 iced_func_kll   -right-* ergodox_l_bash

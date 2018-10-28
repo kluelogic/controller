@@ -29,13 +29,16 @@ pipenv shell
 ### Scan Code
 ![scan_code](images/scan_code.png)
 
-### USB Code (`Scan/Infinity_Ergodox/leftHand.kll`, `Scan/Infinity_Ergodox/rightHand.kll`)
-![usb_code](images/usb_code.png)
+### Pixel Mapping (`Scan/Infinity_Ergodox/scancode_map.kll`)
+![pixel_map](images/pixel_map.png)
 
-### Key Positioning (`Scan/Infinity_Ergodox/leftHand.kll`, `Scan/Infinity_Ergodox/rightHand.kll`)
+### Key Positioning (`Scan/Infinity_Ergodox/leftHand.kll` and `rightHand.kll`)
 ![key_pos](images/key_pos.png)
 
-### Layer 0 (`kll/layouts/my_config.kll`)
+### USB Code (`Scan/Infinity_Ergodox/leftHand.kll` and `rightHand.kll`)
+![usb_code](images/usb_code.png)
+
+### Layer 0 (`kll/kll/layouts/infinity_ergodox/my_layer0.kll`)
 Deviation from the original ErgoDox layout is shown in _**bold italic**_.
 
 ![layer0](images/layer0.png)
