@@ -35,6 +35,13 @@ git checkout master
 git merge upstream/master
 
 cd kll
+git remote -v # to make sure upstreams are set like this:
+
+# origin	https://github.com/kluelogic/kll.git (fetch)
+# origin	https://github.com/kluelogic/kll.git (push)
+# upstream	https://github.com/kiibohd/kll.git (fetch)
+# upstream	https://github.com/kiibohd/kll.git (push)
+
 git fetch upstream
 git checkout master
 git merge upstream/master
