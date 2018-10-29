@@ -9,7 +9,7 @@ cd controller
 git clone https://github.com/kluelogic/kll.git
 ```
 
-## Setting the upstream for a fork (do this once)
+## Set the upstream for the fork (do this once)
 ```bash
 cd controller
 git remote -v
@@ -20,7 +20,7 @@ git remote -v
 git remote add upstream https://github.com/kiibohd/kll.git
 ```
 
-## Syncing a fork
+## Sync the fork
 ```bash
 cd controller
 git remote -v # to make sure upstreams are set like this:
