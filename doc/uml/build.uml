@@ -1,6 +1,8 @@
 '
 ' build.uml
 '
+' Pink: modified
+' LightBlue: new
 
 @startuml
 component ergodox_l_bash #Pink [
@@ -20,6 +22,7 @@ ergodox.bash
 
 component scancode_map_kll [
 <b>BaseMap #1
+
 Scan/
 Infinity_Ergodox/
 scancode_map.kll
@@ -35,6 +38,7 @@ STLcdDefaultImage
 
 component leftHand_kll [
 <b>BaseMap #2
+
 Scan/
 Infinity_Ergodox/
 leftHand.kll
@@ -46,6 +50,7 @@ Key Positioning
 
 component slave1_kll [
 <b>BaseMap #3
+
 Scan/
 Infinity_Ergodox/
 slave1.kll
@@ -55,6 +60,7 @@ ConnectId = 1
 
 component rightHand_kll [
 <b>BaseMap #4
+
 Scan/
 Infinity_Ergodox/
 rightHand.kll
@@ -66,6 +72,7 @@ Key Positioning
 
 component all_leds_kll #Gray [
 <b>DefaultMap #1
+
 kll/
 kll/
 layouts/
@@ -75,6 +82,7 @@ all-leds.kll
 
 'component mdergo1Overlay_kll [
 '<b>DefaultMap #1
+'
 'kll/
 'kll/
 'layouts/
@@ -82,19 +90,21 @@ all-leds.kll
 'mdergo1Overlay.kll
 ']
 
-component my_layer0_kll #Pink [
+component my_layer0_kll #LightBlue [
 <b>DefaultMap #2
+
 kll/
 kll/
 layouts/
 infinity_ergodox/
-my_layer0.kll
+<b>my_layer0.kll
 ---
 Layer-0 Key Mapping
 ]
 
 component lcdFuncMap_kll #Gray [
 <b>DefaultMap #3
+
 kll/
 kll/
 layouts/
@@ -102,40 +112,50 @@ infinity_ergodox/
 lcdFuncMap.kll
 ]
 
-component iced_func_kll #Gray [
+'component iced_func_kll #Gray [
+'<b>PartialMaps<1>
+'
+'kll/
+'kll/
+'layouts/
+'infinity_ergodox/
+'iced_func.kll
+']
+
+'component iced_numpad_kll #Gray [
+'<b>PartialMaps<2>
+'
+'kll/
+'kll/
+'layouts/
+'infinity_ergodox/
+'iced_numpad.kll
+'---
+'flashMode()
+']
+
+component my_layer1_kll #LightBlue [
 <b>PartialMaps<1>
+
 kll/
 kll/
 layouts/
 infinity_ergodox/
-iced_func.kll
+<b>my_layer1.kll
+---
+Layer-1 Key Mapping
 ]
 
-component iced_numpad_kll #Gray [
+component my_layer2_kll #LightBlue [
 <b>PartialMaps<2>
-kll/
-kll/
-layouts/
-infinity_ergodox/
-iced_numpad.kll
-]
 
-component my_layer1_kll #Pink [
-<b>PartialMaps<1>
 kll/
 kll/
 layouts/
 infinity_ergodox/
-my_layer1.kll
-]
-
-component my_layer2_kll #Pink [
-<b>PartialMaps<2>
-kll/
-kll/
-layouts/
-infinity_ergodox/
-my_layer2.kll
+<b>my_layer2.kll
+---
+Layer-2 Key Mapping
 ]
 
 'component R_load [
@@ -164,10 +184,10 @@ all_leds_kll          -* ergodox_l_bash
 'mdergo1Overlay_kll   -* ergodox_l_bash
 my_layer0_kll         -* ergodox_l_bash
 lcdFuncMap_kll        -* ergodox_l_bash
-iced_numpad_kll -right-* ergodox_l_bash
-iced_func_kll   -right-* ergodox_l_bash
-my_layer1_kll   -right-* ergodox_l_bash
-my_layer2_kll   -right-* ergodox_l_bash
+'iced_numpad_kll -right-* ergodox_l_bash
+'iced_func_kll   -right-* ergodox_l_bash
+my_layer2_kll    -right-* ergodox_l_bash
+my_layer1_kll    -right-* ergodox_l_bash
 
 'scancode_map_kll --* ergodox_r_bash
 'rightHand_kll    --* ergodox_r_bash

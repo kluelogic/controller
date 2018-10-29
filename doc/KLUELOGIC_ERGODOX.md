@@ -47,6 +47,12 @@ git checkout master
 git merge upstream/master
 ```
 
+## Diff
+```bash
+cd controller
+./diff.sh
+```
+
 ## Build keyboard with Docker
 ```bash
 # build docker (do this once)
