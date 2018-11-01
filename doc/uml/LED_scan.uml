@@ -53,10 +53,15 @@ if (LED_displayFPS) then (yes)
  :print frame calculation;
 endif
 
-:Lower brightness by LED_brightness;
+:set LED_pageBuffer_brightness;
 :LED_timePrev = Time_now();
+:LED_setupPage|
+:LED_linkedSend|
 
 (A)
+note right
+ led_finish_scan
+end note
 :Latency_end_time\n( ledLatencyResource )|
 stop
 @enduml

@@ -4,7 +4,7 @@
 
 @startuml
 title main_periodic()
-[*] --> PeriodicStage_Scan
+[*] --> PeriodicStage_Scan : stage_tracker
 PeriodicStage_Scan : Scan_poll()
 PeriodicStage_Scan --> PeriodicStage_Macro : Scan_periodic()
 PeriodicStage_Macro : Macro_periodic()

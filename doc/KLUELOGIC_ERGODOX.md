@@ -109,6 +109,22 @@ This layer is for register programming. A key press increments the value of corr
 ![layer2](images/layer2.png)
 
 ## Firmware
+
+### Defines
+
+Text Macro              | Value      |
+----------------------- | ---------- |
+`_kinetis_`             | undefined? |
+`_sam_`                 | undefined? |
+`_sam4s_`               | undefined? |
+`_sam4s_a_`             | undefined? |
+`DEBUG_RESETS`          | undefined? |
+`ISSI_Chip_31FL3731_define` | 1?     |
+`ISSI_Chip_31FL3732_define` | 0?     |
+`ISSI_Chips_define`     | 1?         |
+`SEGGER_SYSVIEW_H`      | undefined? |
+`Storage_Enable_define` | 0?         |
+
 ### Main function (`main.c`)
 ![main](uml/main.png)
 ![main_periodic](uml/main_periodic.png)
