@@ -112,18 +112,21 @@ This layer is for register programming. A key press increments the value of corr
 
 ### Defines
 
-Text Macro              | Value      |
------------------------ | ---------- |
-`_kinetis_`             | undefined? |
-`_sam_`                 | undefined? |
-`_sam4s_`               | undefined? |
-`_sam4s_a_`             | undefined? |
-`DEBUG_RESETS`          | undefined? |
-`ISSI_Chip_31FL3731_define` | 1?     |
-`ISSI_Chip_31FL3732_define` | 0?     |
-`ISSI_Chips_define`     | 1?         |
-`SEGGER_SYSVIEW_H`      | undefined? |
-`Storage_Enable_define` | 0?         |
+Text Macro                  | Value      | Defined in |
+--------------------------- | ---------- | ---------- |
+`_kinetis_`                 | undefined? |            |
+`_sam_`                     | undefined? |            |
+`_sam4s_`                   | undefined? |            |
+`_sam4s_a_`                 | undefined? |            |
+`DEBUG_RESETS`              | undefined? |            |
+`ISSI_Chip_31FL3731_define` | 1          | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll.defs.h` |
+`ISSI_Chip_31FL3732_define` | 0          | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll.defs.h` |
+`ISSI_Chip_31FL3733_define` | 0          | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll.defs.h` |
+`ISSI_Chips_define`         | 1          | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll.defs.h` |
+`ISSI_LEDPages`             | 8          | `Scan/Devices/ISSILed/led_scan.c` |
+`ISSI_PageLength`           | 0xB4       | `Scan/Devices/ISSILed/led_scan.c` |
+`SEGGER_SYSVIEW_H`          | undefined? |            |
+`Storage_Enable_define`     | 0?         |            |
 
 ### Main function (`main.c`)
 ![main](uml/main.png)
@@ -136,7 +139,7 @@ Text Macro              | Value      |
 ### LED scan (`Scan/Devices/ISSILed/led_scan.c`)
 ![LED_setup](uml/LED_setup.png)
 ![LED_scan](uml/LED_scan.png)
-
+![LED_reset](uml/LED_reset.png)
 
 ## Tools
 

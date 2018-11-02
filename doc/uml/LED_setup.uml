@@ -12,7 +12,7 @@ start
 :set LED_pageBuffer[0];
 :set LED_pageBuffer_brightness[0];
 :LED_zeroControlPages|
-:LED_reset|
+#Pink:LED_reset|
 'partition my_LED_setup.c {
 ' :write LED enable/brightness to LED page buffers;  
 ' :initialize local LED variables;

@@ -1,0 +1,15 @@
+'
+' LED_reset.uml
+'
+
+@startuml
+title LED_reset()
+start
+:Pixel_FrameState = FrameState_Sending;
+:LED_displayFPS = 0;
+:LED_zeroPages|
+:LED_sendPage( &LED_ledEnableMask )|
+:LED_writeReg|
+:Pixel_FrameState = FrameState_Update;
+stop
+@enduml
