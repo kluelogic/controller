@@ -111,28 +111,35 @@ This layer is for register programming. A key press increments the value of corr
 ## LED
 ### Macros
 
-Macro                       | Value      | Defined in
---------------------------- | ---------- | ----------
-`_kinetis_`                 | undefined? |           
-`_sam_`                     | undefined? |           
-`_sam4s_`                   | undefined? |           
-`_sam4s_a_`                 | undefined? |           
-`DEBUG_RESETS`              | undefined? |           
-`ISSI_Ch1`                  | `0xE8`     | `Scan/Devices/ISSILed/led_scan.c`
-`ISSI_Chip_31FL3731_define` | 1          | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll_defs.h`
-`ISSI_Chip_31FL3732_define` | 0          | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll_defs.h`
-`ISSI_Chip_31FL3733_define` | 0          | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll_defs.h`
-`ISSI_Chips_define`         | 1          | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll_defs.h`
-`ISSI_LEDPages`             | 8          | `Scan/Devices/ISSILed/led_scan.c`
-`ISSI_PageLength`           | `0xB4`     | `Scan/Devices/ISSILed/led_scan.c`
-`LED_MapCh1_Addr_define`    | `ISSI_Ch1` | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll_defs.h`
-`LED_MapCh1_Bus_define`     | 0          | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll_defs.h`
-`SEGGER_SYSVIEW_H`          | undefined? |            
-`Storage_Enable_define`     | 0?         |            
+Macro                       | Value     
+--------------------------- | ----------
+`_kinetis_`                 | undefined?
+`_sam_`                     | undefined?
+`_sam4s_`                   | undefined?
+`_sam4s_a_`                 | undefined?
+`DEBUG_RESETS`              | undefined?
+`SEGGER_SYSVIEW_H`          | undefined?
+`Storage_Enable_define`     | 0?        
 
 #### `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll_defs.h`
 ```C
-#define ISSILedMask1_define 0xFF,0x00, 0xFF,0x00, 0xFF,0x00, 0xFF,0x00, 0x3F,0x00, 0x00,0x00, 0x00,0x00, 0x00,0x00, 0x00,0x00
+#define ISSI_Chip_31FL3731_define 1
+#define ISSI_Chip_31FL3732_define 0
+#define ISSI_Chip_31FL3733_define 0
+#define ISSI_Chips_define         1
+#define ISSILedMask1_define 0xFF,0x00,0xFF,0x00,0xFF,0x00,\
+                            0xFF,0x00,0x3F,0x00,0x00,0x00,\
+			    0x00,0x00,0x00,0x00,0x00,0x00
+
+#define LED_MapCh1_Addr_define ISSI_Ch1
+#define LED_MapCh1_Bus_define  0       
+```
+
+#### `Scan/Devices/ISSILed/led_scan.c`
+```C
+#define ISSI_Ch1        0xE8
+#define ISSI_LEDPages   8
+#define ISSI_PageLength 0xB4
 ```
 
 ### Typedefs
