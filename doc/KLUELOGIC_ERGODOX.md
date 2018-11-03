@@ -110,9 +110,10 @@ This layer is for register programming. A key press increments the value of corr
 
 ## Firmware
 
-### Defines
+### LED
+#### Macros
 
-Text Macro                  | Value      | Defined in |
+Macro                       | Value      | Defined in |
 --------------------------- | ---------- | ---------- |
 `_kinetis_`                 | undefined? |            |
 `_sam_`                     | undefined? |            |
@@ -127,6 +128,18 @@ Text Macro                  | Value      | Defined in |
 `ISSI_PageLength`           | 0xB4       | `Scan/Devices/ISSILed/led_scan.c` |
 `SEGGER_SYSVIEW_H`          | undefined? |            |
 `Storage_Enable_define`     | 0?         |            |
+
+#### Typedefs
+##### `Scan/Devices/ISSILed/led_scan.c`
+```C
+typedef struct LED_ChannelMap {
+   uint8_t bus;
+   uint8_t addr;
+} LED_ChannelMap;
+```
+
+#### Constants
+##### `Scan/Devices/ISSILed/led_scan.c`
 
 ### Main function (`main.c`)
 ![main](uml/main.png)
