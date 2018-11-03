@@ -108,10 +108,8 @@ This layer is for register programming. A key press increments the value of corr
 
 ![layer2](images/layer2.png)
 
-## Firmware
-
-### LED
-#### Macros
+## LED
+### Macros
 
 Macro                       | Value      | Defined in |
 --------------------------- | ---------- | ---------- |
@@ -120,17 +118,21 @@ Macro                       | Value      | Defined in |
 `_sam4s_`                   | undefined? |            |
 `_sam4s_a_`                 | undefined? |            |
 `DEBUG_RESETS`              | undefined? |            |
-`ISSI_Chip_31FL3731_define` | 1          | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll.defs.h` |
-`ISSI_Chip_31FL3732_define` | 0          | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll.defs.h` |
-`ISSI_Chip_31FL3733_define` | 0          | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll.defs.h` |
-`ISSI_Chips_define`         | 1          | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll.defs.h` |
+`ISSI_Ch1`                  | `0xE8`     | `Scan/Devices/ISSILed/led_scan.c` |
+`ISSI_Chip_31FL3731_define` | 1          | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll_defs.h` |
+`ISSI_Chip_31FL3732_define` | 0          | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll_defs.h` |
+`ISSI_Chip_31FL3733_define` | 0          | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll_defs.h` |
+`ISSI_Chips_define`         | 1          | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll_defs.h` |
 `ISSI_LEDPages`             | 8          | `Scan/Devices/ISSILed/led_scan.c` |
-`ISSI_PageLength`           | 0xB4       | `Scan/Devices/ISSILed/led_scan.c` |
+`ISSI_PageLength`           | `0xB4`     | `Scan/Devices/ISSILed/led_scan.c` |
+`ISSILedMask1_define` |`0xFF,0x00,0xFF,0x00,0xFF,0x00,0xFF,0x00,0x3F,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00`| `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll_defs.h` |
+`LED_MapCh1_Addr_define`    | `ISSI_Ch1` | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll_defs.h` |
+`LED_MapCh1_Bus_define`     | 0          | `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll_defs.h` |
 `SEGGER_SYSVIEW_H`          | undefined? |            |
 `Storage_Enable_define`     | 0?         |            |
 
-#### Typedefs
-##### `Scan/Devices/ISSILed/led_scan.c`
+### Typedefs
+#### `Scan/Devices/ISSILed/led_scan.c`
 ```C
 typedef struct LED_ChannelMap {
    uint8_t bus;
@@ -138,8 +140,22 @@ typedef struct LED_ChannelMap {
 } LED_ChannelMap;
 ```
 
-#### Constants
-##### `Scan/Devices/ISSILed/led_scan.c`
+### Constants
+#### `Scan/Devices/ISSILed/led_scan.c`
+```C
+const LED_ChannelMap LED_ChannelMapping[1] = { { 0, 0xE8 } }; // { I2C bus number, I2C address }
+const LED_EnableBuffer LED_ledEnableMask[1] = { { 0xE8, 0x00, // { I2C address, Starting register address, ...
+                                                { ISSILedMask1_define } } }; 
+```
+
+### Functions
+#### `Scan/Devices/ISSILed/led_scan.c`
+```C
+void LED_zeroPages( uint8_t bus, uint8_t addr, uint8_t startPage, uint8_t numPages, uint8_t startReg, uint8_t endReg );
+void LED_sendPage( uint8_t bus, uint8_t addr, uint16_t *buffer, uint32_t len, uint8_t page );
+```
+
+## Firmware
 
 ### Main function (`main.c`)
 ![main](uml/main.png)
