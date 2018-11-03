@@ -8,8 +8,15 @@ start
 :Pixel_FrameState = FrameState_Sending;
 :LED_displayFPS = 0;
 :LED_zeroPages|
-:LED_sendPage( &LED_ledEnableMask )|
+:LED_sendPage( &LED_ledEnableMask[0] )|
 :LED_writeReg|
+note right
+MODE to Picture Frame
+end note
+:LED_writeReg|
+note right
+Disable software shutdown
+end note
 :Pixel_FrameState = FrameState_Update;
 stop
 @enduml

@@ -70,6 +70,16 @@ pipenv shell
 
 ![build](uml/build.png)
 
+## Firmware
+
+### Main function (`main.c`)
+![main](uml/main.png)
+![main_periodic](uml/main_periodic.png)
+
+### Scan loop (`Scan/Infinity_Ergodox/scan_loop.c`)
+![Scan_setup](uml/Scan_setup.png)
+![Scan_poll](uml/Scan_poll.png)
+
 ## Keyboard Layout Language
 
 [KLL Spec](https://github.com/kiibohd/kll-spec)
@@ -127,9 +137,17 @@ Macro                       | Value
 #define ISSI_Chip_31FL3732_define 0
 #define ISSI_Chip_31FL3733_define 0
 #define ISSI_Chips_define         1
-#define ISSILedMask1_define 0xFF,0x00,0xFF,0x00,0xFF,0x00,\
-                            0xFF,0x00,0x3F,0x00,0x00,0x00,\
-			    0x00,0x00,0x00,0x00,0x00,0x00
+#define ISSI_Global_Brightness_define 255
+#define ISSILedMask1_define\
+	0xFF, 0x00, /* C1-1 -> C1-16 */\
+	0xFF, 0x00, /* C2-1 -> C2-16 */\
+	0xFF, 0x00, /* C3-1 -> C3-16 */\
+	0xFF, 0x00, /* C4-1 -> C4-16 */\
+	0x3F, 0x00, /* C5-1 -> C5-16 */\
+	0x00, 0x00, /* C6-1 -> C6-16 */\
+	0x00, 0x00, /* C7-1 -> C7-16 */\
+	0x00, 0x00, /* C8-1 -> C8-16 */\
+	0x00, 0x00, /* C9-1 -> C9-16 */\
 
 #define LED_MapCh1_Addr_define ISSI_Ch1
 #define LED_MapCh1_Bus_define  0       
@@ -137,9 +155,13 @@ Macro                       | Value
 
 #### `Scan/Devices/ISSILed/led_scan.c`
 ```C
-#define ISSI_Ch1        0xE8
-#define ISSI_LEDPages   8
-#define ISSI_PageLength 0xB4
+#define ISSI_Ch1              0xE8
+#define ISSI_ConfigPage       0x0B // Function Register
+#define ISSI_ConfigPageLength 0x0C
+#define ISSI_LEDPages         8
+#define ISSI_PageLength       0xB4
+
+#define LED_BufferLength      144
 ```
 
 ### Typedefs
@@ -154,27 +176,24 @@ typedef struct LED_ChannelMap {
 ### Constants
 #### `Scan/Devices/ISSILed/led_scan.c`
 ```C
-const LED_ChannelMap LED_ChannelMapping[1] = { { 0, 0xE8 } }; // { I2C bus number, I2C address }
-const LED_EnableBuffer LED_ledEnableMask[1] = { { 0xE8, 0x00, // { I2C address, Starting register address, ...
-                                                { ISSILedMask1_define } } }; 
+const LED_ChannelMap   LED_ChannelMapping[1] = { { 0, 0xE8 } }; // { I2C bus number, I2C address }
+const LED_EnableBuffer LED_ledEnableMask [1] = {
+   { 0xE8, 0x00, /* I2C address, Starting register address */ { ISSILedMask1_define } } }; 
 ```
 
 ### Functions
 #### `Scan/Devices/ISSILed/led_scan.c`
 ```C
-void LED_zeroPages( uint8_t bus, uint8_t addr, uint8_t startPage, uint8_t numPages, uint8_t startReg, uint8_t endReg );
-void LED_sendPage( uint8_t bus, uint8_t addr, uint16_t *buffer, uint32_t len, uint8_t page );
+void LED_sendPage ( uint8_t bus, uint8_t addr, uint16_t *buffer, uint32_t len, uint8_t page )
+void LED_setupPage( uint8_t bus, uint8_t addr, uint8_t page )
+void LED_writeReg ( uint8_t bus, uint8_t addr, uint8_t reg, uint8_t val, uint8_t page )
+void LED_zeroControlPages()
+void LED_zeroPages( uint8_t bus, uint8_t addr, uint8_t startPage, uint8_t numPages,
+                    uint8_t startReg, uint8_t endReg )
 ```
 
-## Firmware
-
-### Main function (`main.c`)
-![main](uml/main.png)
-![main_periodic](uml/main_periodic.png)
-
-### Scan loop (`Scan/Infinity_Ergodox/scan_loop.c`)
-![Scan_setup](uml/Scan_setup.png)
-![Scan_poll](uml/Scan_poll.png)
+### Control Registers
+![led_regs](images/led_regs.png)
 
 ### LED scan (`Scan/Devices/ISSILed/led_scan.c`)
 ![LED_setup](uml/LED_setup.png)

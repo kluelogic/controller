@@ -33,12 +33,7 @@ if (i2c_error) then (yes)
  :Pixel_FrameState = FrameState_Update;
 endif
 
-if (Pixel_FrameState) then (is FrameState_Sending)
- (A)
- detach
-endif
-
-if (Pixel_FrameState) then (isn't FrameState_Ready)
+if (Pixel_FrameState) then (FrameState_Sending or\nnot FrameState_Ready)
  (A)
  detach
 endif
