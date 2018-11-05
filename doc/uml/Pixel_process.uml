@@ -1,0 +1,56 @@
+'
+' Pixel_process.uml
+'
+
+@startuml
+title Pixel_process()
+start
+:Latency_start_time( pixelLatencyResource );
+if (Pixel_FrameState) then (neither FrameState_Update\nnor FrameState_Pause)
+ (F)
+ detach
+endif
+if (Pixel_animationControl) then (AnimationControl_Forward or\nAnimationControl_ForwardOne)
+ #Aqua:Pixel_FrameState =\nFrameState_Update;
+elseif (AnimationControl_Stop) then (yes)
+ #Aqua:Pixel_FrameState =\nFrameState_Update;
+ :Pixel_clearAnimations|
+ :Pixel_clearPixels|
+ #Turquoise:Pixel_animationControl =\nAnimationControl_Forward;
+elseif (AnimationControl_Reset) then (yes)
+ #Aqua:Pixel_FrameState =\nFrameState_Update;
+ :Pixel_clearAnimations|
+ :Pixel_clearPixels|
+ #Turquoise:Pixel_animationControl =\nAnimationControl_Forward;
+ #Pink:Pixel_initializeStartAnimations|
+elseif (AnimationControl_WipePause) then (yes)
+ #Turquoise:Pixel_animationControl =\nAnimationControl_Pause;
+ :Pixel_clearPixels|
+ (D)
+ detach
+elseif (AnimationControl_Clear) then (yes)
+ #Aqua:Pixel_FrameState =\nFrameState_Update;
+ :Pixel_clearPixels|
+else (no)
+ #Aqua:Pixel_FrameState =\nFrameState_Pause;
+ (F)
+ detach
+endif
+:Process Pixel_testMode;
+:Pixel_stackProcess|
+if (Pixel_animationControl) then (AnimationControl_ForwardOne)
+ #Turquoise:Pixel_animationControl =\nAnimationControl_Pause;
+endif
+(D)
+note right
+ pixel_process_done
+end note
+:Pixel_SecondaryProcessing|
+#Aqua:Pixel_FrameState =\nFrameState_Ready;
+(F)
+note right
+ pixel_process_final
+end note
+:Latency_end_time(pixelLatencyResource)|
+stop
+@enduml

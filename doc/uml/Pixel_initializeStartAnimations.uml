@@ -1,0 +1,12 @@
+'
+' Pixel_initializeStartAnimations.uml
+'
+
+@startuml
+title Pixel_initializeStartAnimations()
+start
+ while (index) is (< Pixel_AnimationSettingsNum_KLL)
+  :Pixel_addDefaultAnimation(index)|
+ endwhile
+stop
+@enduml

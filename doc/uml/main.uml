@@ -10,11 +10,11 @@ start
 #Pink:Periodic_function( &main_periodic )|
 :Output_setup|
 :Macro_setup|
-#LightGreen:Scan_setup|
+#Gold:Scan_setup|
 ':stage_tracker = PeriodicStage_Scan;
 while (forever)
  :CLI_process|
- #LightGreen:Scan_poll|
+ #Gold:Scan_poll|
  :Macro_poll|
  :Output_poll|
 endwhile

@@ -19,12 +19,12 @@ if (LED_currentEvent) then (yes)
 endif
 
 if (LED_pause) then (yes)
- (A)
+ (F)
  detach
 endif
 
 if (LED_enable &&\n LED_enable_current ) then (no)
- (A)
+ (F)
  detach
 endif
 
@@ -34,13 +34,13 @@ if (i2c_error) then (yes)
 endif
 
 if (Pixel_FrameState) then (FrameState_Sending or\nnot FrameState_Ready)
- (A)
+ (F)
  detach
 endif
 
 :duration = Time_duration( LED_timePrev );
 if (duration.ms) then (< LED_framerate)
- (A)
+ (F)
  detach
 endif
 
@@ -53,7 +53,7 @@ endif
 :LED_setupPage|
 :LED_linkedSend|
 
-(A)
+(F)
 note right
  led_finish_scan
 end note

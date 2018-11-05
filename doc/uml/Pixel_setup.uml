@@ -1,0 +1,17 @@
+'
+' Pixel_setup.uml
+'
+
+@startuml
+title Pixel_setup()
+start
+:CLI_registerDictionary|
+#Aqua:Pixel_FrameState =\nFrameState_Update;
+:Pixel_testMode =\nPixel_Test_Mode_define;
+:Pixel_clearAnimations|
+#Turquoise:Pixel_animationControl =\nAnimationControl_Forward;
+#Pink:Pixel_initializeStartAnimations|
+:Pixel_SecondaryProcessing_setup|
+:pixelLatencyResource =\nLatency_add_resource("PixelMap", LatencyOption_Ticks);
+stop
+@enduml

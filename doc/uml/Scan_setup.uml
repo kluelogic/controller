@@ -7,9 +7,9 @@ title Scan_setup()
 start
 :Connect_setup|
 :Matrix_setup|
-#LightGreen:LED_setup|
-:LCD_setup|
-:Pixel_setup|
+#Plum:LED_setup|
+#Lime:LCD_setup|
+#Aqua:Pixel_setup|
 :Matrix_start|
 stop
 @enduml

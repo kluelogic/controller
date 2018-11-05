@@ -5,8 +5,8 @@
 @startuml
 title Scan_poll()
 start
-:Pixel_process|
-#LightGreen:LED_scan|
-:LCD_scan|
+#Aqua:Pixel_process|
+#Plum:LED_scan|
+#Lime:LCD_scan|
 stop
 @enduml

@@ -1,6 +1,10 @@
 # All about KlueLogic ErgoDox
 
-## Clone
+<!-------------------------------------------------------------------------------->
+## Build
+<!-------------------------------------------------------------------------------->
+
+### Clone
 ```bash
 cd sandbox
 git clone https://github.com/kluelogic/controller.git
@@ -9,7 +13,7 @@ cd controller
 git clone https://github.com/kluelogic/kll.git
 ```
 
-## Set the upstream for the fork (do this once)
+### Set the upstream for the fork (do this once)
 ```bash
 cd controller
 git remote -v
@@ -20,7 +24,7 @@ git remote -v
 git remote add upstream https://github.com/kiibohd/kll.git
 ```
 
-## Sync the fork
+### Sync the fork
 ```bash
 cd controller
 git remote -v # to make sure upstreams are set like this:
@@ -47,13 +51,13 @@ git checkout master
 git merge upstream/master
 ```
 
-## Diff
+### Diff
 ```bash
 cd controller
-./diff.sh
+./diff.sh # diff between sandbox/controller and washroom/controller
 ```
 
-## Build keyboard with Docker
+### Build keyboard with Docker
 ```bash
 # build docker (do this once)
 cd controller/Dockerfiles
@@ -70,7 +74,9 @@ pipenv shell
 
 ![build](uml/build.png)
 
+<!-------------------------------------------------------------------------------->
 ## Firmware
+<!-------------------------------------------------------------------------------->
 
 ### Main function (`main.c`)
 ![main](uml/main.png)
@@ -80,11 +86,12 @@ pipenv shell
 ![Scan_setup](uml/Scan_setup.png)
 ![Scan_poll](uml/Scan_poll.png)
 
-## Keyboard Layout Language
-
-[KLL Spec](https://github.com/kiibohd/kll-spec)
-
+<!-------------------------------------------------------------------------------->
 ## Keyboard Layout
+<!-------------------------------------------------------------------------------->
+
+### Keyboard Layout Language
+[KLL Spec](https://github.com/kiibohd/kll-spec)
 
 ### ErgoDox Switch ID
 ![switch_id](images/switch_id.png)
@@ -118,7 +125,10 @@ This layer is for register programming. A key press increments the value of corr
 
 ![layer2](images/layer2.png)
 
+<!-------------------------------------------------------------------------------->
 ## LED
+<!-------------------------------------------------------------------------------->
+
 ### Macros
 
 Macro                       | Value     
@@ -168,8 +178,8 @@ Macro                       | Value
 #### `Scan/Devices/ISSILed/led_scan.c`
 ```C
 typedef struct LED_ChannelMap {
-   uint8_t bus;
-   uint8_t addr;
+  uint8_t bus;
+  uint8_t addr;
 } LED_ChannelMap;
 ```
 
@@ -200,7 +210,75 @@ void LED_zeroPages( uint8_t bus, uint8_t addr, uint8_t startPage, uint8_t numPag
 ![LED_scan](uml/LED_scan.png)
 ![LED_reset](uml/LED_reset.png)
 
+<!-------------------------------------------------------------------------------->
+## LCD
+<!-------------------------------------------------------------------------------->
+
+<!-------------------------------------------------------------------------------->
+## Pixel
+<!-------------------------------------------------------------------------------->
+
+### Macros
+
+#### `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll_defs.h`
+```C
+#define Pixel_AnimationSettingsNum_KLL 1
+```
+
+### Typedefs
+#### `Macro/PixelMap/pixel.h`
+```C
+typedef enum AnimationPlayState {
+  AnimationPlayState_Start  = 0, // Start animation
+  AnimationPlayState_Pause  = 1, // Pause animation (default set by KLL Compiler)
+  AnimationPlayState_Stop   = 2, // Stop  animation (removes animation state)
+  AnimationPlayState_Single = 3, // Play a single frame of the animation
+} AnimationPlayState;
+
+typedef enum AnimationReplaceType {
+  AnimationReplaceType_None  = 0, // Don't replace (add new animation to stack if not full)
+  AnimationReplaceType_Basic = 1, // Replace only if the same trigger initiated
+  AnimationReplaceType_All   = 2, // Replace no matter what trigger initiated
+  AnimationReplaceType_State = 3, // Using same trigger, start on Activate/Press, stop on Deactivate/Release
+  AnimationReplaceType_Clear = 4, // Clear all other animations before addi
+} AnimationReplaceType;
+
+typedef struct AnimationStackElement {
+  TriggerMacro        *trigger;     // TriggerMacro that added element, set to 0 if unused
+                                    // If set to 1 in default settings, animation is enabled at start time
+  uint16_t             index;       // Animation id
+  uint16_t             pos;         // Current fundamental frame (XXX Make 32bit?)
+  uint8_t              subpos;      // If framedelay is set, current delay position
+                                    // Counts down up to framedelay.
+  uint8_t              loops;       // # of loops to run animation, 0 indicates infinite
+  uint8_t              framedelay;  // # of frames to delay the animation per frame of the animation
+                                    // 0 - Full speed
+                                    // 1 - Half speed
+                                    // 2 - 1/3  speed
+                                    // etc.
+  PixelFrameOption     frameoption; // Frame processing options
+  PixelFrameFunction   ffunc;       // Frame tweening function
+  PixelPixelFunction   pfunc;       // Pixel tweening function
+  AnimationReplaceType replace;     // Replace type for stack element
+  AnimationPlayState   state;       // Animation state
+} AnimationStackElement;
+```
+
+### Constants
+#### `Keyboards/linux-gnu.ICED-L.gcc.ninja/generatedPixelmap.c`
+```C
+const AnimationStackElement Pixel_AnimationSettings[] = { { ... }, ... };
+```
+
+### Pixel (`Macro/PixelMap/pixel.c`)
+![Pixel_setup](uml/Pixel_setup.png)
+![Pixel_process](uml/Pixel_process.png)
+![Pixel_initializeStartAnimations](uml/Pixel_initializeStartAnimations.png)
+![Pixel_addDefaultAnimation](uml/Pixel_addDefaultAnimation.png)
+
+<!-------------------------------------------------------------------------------->
 ## Tools
+<!-------------------------------------------------------------------------------->
 
 ### Doxygen
 ```bash

@@ -1,0 +1,10 @@
+'
+' Pixel_addDefaultAnimation.uml
+'
+
+@startuml
+title Pixel_addDefaultAnimation()
+start
+:Pixel_addAnimation(&Pixel_AnimationSettings[ index ])|
+stop
+@enduml
