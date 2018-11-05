@@ -6,7 +6,7 @@
 title Pixel_initializeStartAnimations()
 start
  while (index) is (< Pixel_AnimationSettingsNum_KLL)
-  :Pixel_addDefaultAnimation(index)|
+  #Pink:Pixel_addDefaultAnimation(index)|
  endwhile
 stop
 @enduml
