@@ -369,7 +369,7 @@ static int usb_tx_string_desc(int idx, int reqlen)
 	// If found it will be compared against known OS compatabilily strings
 	// Once matched additional Microsoft-specific setup requests may be sent
 	if (idx == 0xEE) {
-		d = &msft_extended_compat_desc;
+		d = (struct usb_desc_string_t* const *)&msft_extended_compat_desc;
 		usb_ep0_tx_cp(*d, (*d)->bLength, reqlen, NULL, NULL);
 		return (0);
 	}
@@ -700,7 +700,7 @@ int usb_ep0_tx_cp(const void *buf, size_t len, size_t reqlen, ep_callback_t cb, 
 }
 
 void usb_handle_control_status_cb(ep_callback_t cb) {
-	udd_g_ctrlreq.callback = cb;
+	udd_g_ctrlreq.callback = (void (*)(void))cb;
 }
 
 void usb_attach_function(const struct usbd_function *function, struct usbd_function_ctx_header *ctx) {}

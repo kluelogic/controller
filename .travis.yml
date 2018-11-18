@@ -3,7 +3,7 @@
 # Jacob Alexander 2016-2018
 
 sudo: required
-dist: trusty
+dist: xenial
 
 language:
   - c
@@ -42,6 +42,9 @@ matrix:
   # TODO - Still some travis clang issues
   allow_failures:
     - compiler: clang
+    # XXX (HaaTa): Docker environment creation is slow causing Travis-CI to halt jobs
+    # This will need to get fixed
+    - env: DIR=Dockerfiles SCRIPT=all.bash
 
   exclude:
     # Bootloader doesn't support clang yet
@@ -64,7 +67,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository universe -y; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa -y; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install dfu-util tree exuberant-ctags gcc-arm-embedded python3-pip -y; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install dfu-util tree exuberant-ctags gcc-arm-embedded python3-pip python3-setuptools -y; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python; fi # Homebrew defaults to Python 3 now, but we have to upgrade
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install tree ctags dfu-util binutils gnu-sed; fi
@@ -88,8 +91,8 @@ install:
   - cmake --version
 
   # Prepare pipenv
-  - sudo pip3 install --upgrade pip
-  - sudo pip3 install kll
+  - sudo -H pip3 install --upgrade pip
+  - sudo -H pip3 install kll
 
 # Run test script(s)
 script:
@@ -122,8 +125,4 @@ deploy:
     repo: kiibohd/controller
     condition: $TRAVIS_OS_NAME = linux
     condition: $DEPLOY_NAME != ""
-
-# Post test script commands
-after_script:
-  - tree
 

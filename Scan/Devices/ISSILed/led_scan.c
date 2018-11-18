@@ -20,6 +20,7 @@
 #include <Lib/ScanLib.h>
 
 // Project Includes
+#include <Lib/gpio.h>
 #include <Lib/storage.h>
 #include <cli.h>
 #include <kll_defs.h>
@@ -278,6 +279,12 @@ const LED_EnableBuffer LED_ledEnableMask[ISSI_Chips_define] = {
 #error "Invalid number of ISSI Chips"
 #endif
 
+// GPIO Pins
+static const GPIO_Pin hardware_shutdown_pin = ISSI_HardwareShutdownPin_define;
+#if ISSI_Chip_31FL3733_define == 1
+static const GPIO_Pin iirst_pin = ISSI_IIRSTPin_define;
+#endif
+
 // Latency measurement resource
 static uint8_t ledLatencyResource;
 
@@ -487,19 +494,10 @@ void LED_reset()
 
 #if ISSI_Chip_31FL3733_define == 1
 	// Reset I2C bus
-#if defined(_kinetis_)
-	GPIOC_PSOR |= (1<<5);
-	delay_us(200);
-	GPIOC_PCOR |= (1<<5);
-#elif defined(_sam4s_a_)
-	PIOA->PIO_SODR = (1<<16);
-	delay_us(200);
-	PIOA->PIO_CODR = (1<<16);
-#elif defined(_sam4s_)
-	PIOA->PIO_SODR = (1<<17);
-	delay_us(200);
-	PIOA->PIO_CODR = (1<<17);
-#endif
+	GPIO_Ctrl( iirst_pin, GPIO_Type_DriveSetup, GPIO_Config_Pullup );
+	GPIO_Ctrl( iirst_pin, GPIO_Type_DriveHigh, GPIO_Config_Pullup );
+	delay_us(50);
+	GPIO_Ctrl( iirst_pin, GPIO_Type_DriveLow, GPIO_Config_Pullup );
 #endif
 
 	// Clear LED Pages
@@ -734,40 +732,17 @@ inline void LED_setup()
 	LED_enable_current = ISSI_Enable_define; // Needs a default setting, almost always unset immediately
 
 	// Enable Hardware shutdown (pull low)
-#if defined(_kinetis_)
-	GPIOB_PDDR |= (1<<16);
-	PORTB_PCR16 = PORT_PCR_SRE | PORT_PCR_DSE | PORT_PCR_MUX(1);
-	GPIOB_PCOR |= (1<<16);
-#elif defined(_sam_)
-	PIOA->PIO_OER = (1<<15);
-	PIOA->PIO_CODR = (1<<15);
-#endif
+	GPIO_Ctrl( hardware_shutdown_pin, GPIO_Type_DriveSetup, GPIO_Config_Pullup );
+	GPIO_Ctrl( hardware_shutdown_pin, GPIO_Type_DriveLow, GPIO_Config_Pullup );
 
 #if ISSI_Chip_31FL3733_define == 1
 	// Reset I2C bus (pull high, then low)
 	// NOTE: This GPIO may be shared with the debug LED
-#if defined(_kinetis_)
-	GPIOA_PDDR |= (1<<5);
-	PORTA_PCR5 = PORT_PCR_SRE | PORT_PCR_DSE | PORT_PCR_MUX(1);
-	GPIOC_PSOR |= (1<<5);
+	GPIO_Ctrl( iirst_pin, GPIO_Type_DriveSetup, GPIO_Config_Pullup );
+	GPIO_Ctrl( iirst_pin, GPIO_Type_DriveHigh, GPIO_Config_Pullup );
 	delay_us(50);
-	GPIOC_PCOR |= (1<<5);
-#elif defined(_sam4s_a_)
-	PIOA->PIO_OER = (1<<16);
-	PIOA->PIO_SODR = (1<<16);
-	delay_us(50);
-	PIOA->PIO_CODR = (1<<16);
-#elif defined(_sam4s_)
-	PIOA->PIO_OER = (1<<17);
-	PIOA->PIO_SODR = (1<<17);
-	delay_us(50);
-	PIOA->PIO_CODR = (1<<17);
+	GPIO_Ctrl( iirst_pin, GPIO_Type_DriveLow, GPIO_Config_Pullup );
 #endif
-#endif
-
-	// PIOA->PIO_PER = (1<<15);
-	// PIOA->PIO_OER = (1<<15);
-	// PIOA->PIO_SODR = (1<<15);
 
 	// Zero out Frame Registers
 	// This needs to be done before disabling the hardware shutdown (or the leds will do undefined things)
@@ -776,11 +751,7 @@ inline void LED_setup()
 	// Disable Hardware shutdown of ISSI chips (pull high)
 	if ( LED_enable && LED_enable_current )
 	{
-#if defined(_kinetis_)
-		GPIOB_PSOR |= (1<<16);
-#elif defined(_sam_)
-		PIOA->PIO_SODR = (1<<15);
-#endif
+		GPIO_Ctrl( hardware_shutdown_pin, GPIO_Type_DriveHigh, GPIO_Config_Pullup );
 	}
 
 	// Reset LED sequencing
@@ -898,21 +869,13 @@ inline void LED_scan()
 	if ( LED_enable && LED_enable_current )
 	{
 		// Disable Hardware shutdown of ISSI chips (pull high)
-#if defined(_kinetis_)
-		GPIOB_PSOR |= (1<<16);
-#elif defined(_sam_)
-		PIOA->PIO_SODR = (1<<15);
-#endif
+		GPIO_Ctrl( hardware_shutdown_pin, GPIO_Type_DriveHigh, GPIO_Config_Pullup );
 	}
 	// Only write pages to I2C if chip is enabled (i.e. Hardware shutdown is disabled)
 	else
 	{
 		// Enable hardware shutdown
-#if defined(_kinetis_)
-		GPIOB_PCOR |= (1<<16);
-#elif defined(_sam_)
-		PIOA->PIO_CODR = (1<<15);
-#endif
+		GPIO_Ctrl( hardware_shutdown_pin, GPIO_Type_DriveLow, GPIO_Config_Pullup );
 		goto led_finish_scan;
 	}
 
@@ -994,7 +957,7 @@ inline void LED_scan()
 			ISSI_LEDPwmPage
 		);
 
-#if ISSI_Chip_31FL3731_define == 1 || ISSI_Chip_31FL3732_define == 1
+#if ISSI_Chip_31FL3732_define == 1
 		// Reset LED enable mask
 		// XXX At high speeds, the IS31FL3732 seems to have random bit flips
 		//     To get around this, just re-set the enable mask before each send
@@ -1192,20 +1155,10 @@ void cliFunc_ledReset( char* args )
 
 	// Reset I2C bus
 #if ISSI_Chip_31FL3733_define == 1
-#if defined(_kinetis_)
-	GPIOC_PSOR |= (1<<5);
+	GPIO_Ctrl( iirst_pin, GPIO_Type_DriveSetup, GPIO_Config_Pullup );
+	GPIO_Ctrl( iirst_pin, GPIO_Type_DriveHigh, GPIO_Config_Pullup );
 	delay_us(50);
-	GPIOC_PCOR |= (1<<5);
-#elif defined(_sam4s_a_)
-	PIOA->PIO_OER = (1<<16);
-	PIOA->PIO_SODR = (1<<16);
-	delay_us(50);
-	PIOA->PIO_CODR = (1<<16);
-#elif defined(_sam4s_)
-	PIOA->PIO_SODR = (1<<17);
-	delay_us(50);
-	PIOA->PIO_CODR = (1<<17);
-#endif
+	GPIO_Ctrl( iirst_pin, GPIO_Type_DriveLow, GPIO_Config_Pullup );
 #endif
 	i2c_reset();
 

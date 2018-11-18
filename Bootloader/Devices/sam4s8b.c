@@ -23,6 +23,7 @@
 
 // Project Includes
 #include <Lib/entropy.h>
+#include <Lib/gpio.h>
 #include <Lib/storage.h>
 #include "debug.h"
 
@@ -102,6 +103,11 @@ void Chip_reset()
 	}
 
 	print( "Secure Key Generated." NL );
+
+	// Make sure debug LED is off
+	const GPIO_Pin debug_led = gpio(B,0);
+	GPIO_Ctrl( debug_led, GPIO_Type_DriveSetup, GPIO_Config_None );
+	GPIO_Ctrl( debug_led, GPIO_Type_DriveLow, GPIO_Config_None );
 }
 
 // Called during bootloader initialization
@@ -111,15 +117,15 @@ void Chip_setup()
 	WDT->WDT_MR = WDT_MR_WDDIS;
 
 	// Enable Debug LED
-	PIOB->PIO_PER = (1<<0);
-	PIOB->PIO_OER = (1<<0);
-	PIOB->PIO_SODR = (1<<0);
+	const GPIO_Pin debug_led = gpio(B,0);
+	GPIO_Ctrl( debug_led, GPIO_Type_DriveSetup, GPIO_Config_None );
+	GPIO_Ctrl( debug_led, GPIO_Type_DriveHigh, GPIO_Config_None );
 
 	// Initialize non-volatile storage
 	storage_init();
 
 	// Make sure USB transceiver is reset (in case we didn't do a full reset)
-	udd_disable();
+	udc_stop();
 
 	// Start USB stack
 	udc_start();
