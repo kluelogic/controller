@@ -72,6 +72,17 @@ pipenv shell
 ./ergodox.bash
 ```
 
+### Load the firmware
+```bash
+# install dfu-util (do this once)
+sudo apt install dfu-util
+# sudo apt install screen # not needed
+
+cd controller/Keyboards/linux-gnu.ICED-L.gcc.ninja
+sudo ./load
+# click the reset button in the back
+```
+
 ![build](uml/build.png)
 
 <!-------------------------------------------------------------------------------->
@@ -222,18 +233,43 @@ void LED_zeroPages( uint8_t bus, uint8_t addr, uint8_t startPage, uint8_t numPag
 
 #### `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll_defs.h`
 ```C
+#define Animation__<NAME> 0
 #define Pixel_AnimationSettingsNum_KLL 1
+#define Pixel_AnimationStackSize_define 20
+```
+
+#### `Macro/PixelMap/pixel.h`
+```C
+#define Pixel_AnimationStackSize Pixel_AnimationStackSize_define
 ```
 
 ### Typedefs
+#### `Macro/PartialMap/kll.h`
+```C
+typedef struct TriggerMacro {
+  const uint8_t *guide;
+  const var_uint_t result;
+} TriggerMacro;
+```
+
 #### `Macro/PixelMap/pixel.h`
 ```C
-typedef enum AnimationPlayState {
-  AnimationPlayState_Start  = 0, // Start animation
-  AnimationPlayState_Pause  = 1, // Pause animation (default set by KLL Compiler)
-  AnimationPlayState_Stop   = 2, // Stop  animation (removes animation state)
-  AnimationPlayState_Single = 3, // Play a single frame of the animation
-} AnimationPlayState;
+typedef enum PixelFrameOption {
+  PixelFrameOption_None         = 0, // No options set
+  PixelFrameOption_FrameStretch = 1, // During frame delay frames, re-run animation frame
+} PixelFrameOption;
+
+typedef enum PixelFrameFunction {
+  PixelFrameFunction_Off = 0,
+  PixelFrameFunction_Interpolation,
+  PixelFrameFunction_InterpolationKLL,
+} PixelFrameFunction;
+
+typedef enum PixelPixelFunction {
+  PixelPixelFunction_Off = 0,
+  PixelPixelFunction_PointInterpolation,
+  PixelPixelFunction_PointInterpolationKLL,
+} PixelPixelFunction;
 
 typedef enum AnimationReplaceType {
   AnimationReplaceType_None  = 0, // Don't replace (add new animation to stack if not full)
@@ -242,6 +278,13 @@ typedef enum AnimationReplaceType {
   AnimationReplaceType_State = 3, // Using same trigger, start on Activate/Press, stop on Deactivate/Release
   AnimationReplaceType_Clear = 4, // Clear all other animations before addi
 } AnimationReplaceType;
+ 
+typedef enum AnimationPlayState {
+  AnimationPlayState_Start  = 0, // Start animation
+  AnimationPlayState_Pause  = 1, // Pause animation (default set by KLL Compiler)
+  AnimationPlayState_Stop   = 2, // Stop animation (removes animation state)
+  AnimationPlayState_Single = 3, // Play a single frame of the animation
+} AnimationPlayState;
 
 typedef struct AnimationStackElement {
   TriggerMacro        *trigger;     // TriggerMacro that added element, set to 0 if unused
@@ -262,12 +305,59 @@ typedef struct AnimationStackElement {
   AnimationReplaceType replace;     // Replace type for stack element
   AnimationPlayState   state;       // Animation state
 } AnimationStackElement;
+
+typedef struct AnimationStack {
+  int16_t size;
+  AnimationStackElement *stack[Pixel_AnimationStackSize];
+} AnimationStack;
+
+typedef enum PixelChange {
+  PixelChange_Set = 0,         // =
+  PixelChange_Add,             // +
+  PixelChange_Subtract,        // -
+  PixelChange_NoRoll_Add,      // +:
+  PixelChange_NoRoll_Subtract, // -:
+  PixelChange_LeftShift,       // <<
+  PixelChange_RightShift,      // >>
+} PixelChange;
 ```
 
 ### Constants
 #### `Keyboards/linux-gnu.ICED-L.gcc.ninja/generatedPixelmap.c`
 ```C
-const AnimationStackElement Pixel_AnimationSettings[] = { { ... }, ... };
+// A[<NAME>] <= start, pfunc:interp;
+
+const AnimationStackElement Pixel_AnimationSettings[] = {
+  { (TriggerMacro*)1,        // trigger
+    Animation__<NAME>,       // index (0)
+    0,                       // pos
+    0,                       // subpos
+    0,                       // loops (infinite)
+    0,                       // framedelay (full speed)
+    PixelFrameOption_None,   // frameoption
+    0,                       // ffunc
+    1,                       // pfunc (point interpolation)
+    0,                       // replace
+    AnimationPlayState_Start // state
+  },
+};
+
+const uint8_t **Pixel_Animations[] = {
+  /*0*/ <NAME>_frames,
+};
+
+const uint8_t *<NAME>_frames[] = {
+  <NAME>_frame1,
+  0
+};
+
+// A[<NAME>, 1] <= P[c:0%](255), P[c:100%](255);
+
+const uint8_t <NAME>_frame1[] = {
+  PixelAddressType_ColumnFill, /*0.0*/ 0,0, /*None*/0,0, PixelChange_Set, 255,
+  PixelAddressType_ColumnFill, /*1.0*/16,0, /*None*/0,0, PixelChange_Set, 255,
+  PixelAddressType_End
+};
 ```
 
 ### Pixel (`Macro/PixelMap/pixel.c`)
@@ -275,6 +365,10 @@ const AnimationStackElement Pixel_AnimationSettings[] = { { ... }, ... };
 ![Pixel_process](uml/Pixel_process.png)
 ![Pixel_initializeStartAnimations](uml/Pixel_initializeStartAnimations.png)
 ![Pixel_addDefaultAnimation](uml/Pixel_addDefaultAnimation.png)
+![Pixel_addAnimation](uml/Pixel_addAnimation.png)
+![Pixel_stackProcess](uml/Pixel_stackProcess.png)
+![Pixel_animationProcess](uml/Pixel_animationProcess.png)
+![Pixel_frameTweenStandard](uml/Pixel_frameTweenStandard.png)
 
 <!-------------------------------------------------------------------------------->
 ## Tools
@@ -282,13 +376,13 @@ const AnimationStackElement Pixel_AnimationSettings[] = { { ... }, ... };
 
 ### Doxygen
 ```bash
-cd doc
+cd controller/doc
 make html # then open html/index.html
 ```
 
 ### UML
 ```bash
-cd doc # edit uml/*.uml if necessary
+cd controller/doc # edit uml/*.uml if necessary
 make uml
 ```
 

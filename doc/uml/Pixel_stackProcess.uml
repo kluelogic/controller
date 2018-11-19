@@ -1,0 +1,13 @@
+'
+' Pixel_stackProcess.uml
+'
+
+@startuml
+title Pixel_stackProcess()
+start
+ while (pos) is (< Pixel_AnimationStack.size)
+  :elem = Pixel_AnimationStack.stack[ pos ];
+  #Pink:Pixel_animationProcess( elem )|
+ endwhile
+stop
+@enduml

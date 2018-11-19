@@ -12,32 +12,32 @@ if (Pixel_FrameState) then (neither FrameState_Update\nnor FrameState_Pause)
 endif
 if (Pixel_\nanimationControl) then (AnimationControl_\nForward or\nAnimationControl_\nForwardOne)
  #Aqua:Pixel_\nFrameState =\nFrameState_\nUpdate;
-elseif (AnimationControl_\nStop) then (yes)
+elseif (Pixel_\nanimationControl) then (AnimationControl_\nStop)
  #Aqua:Pixel_\nFrameState =\nFrameState_\nUpdate;
  :Pixel_\nclearAnimations|
  :Pixel_\nclearPixels|
  #Turquoise:Pixel_\nanimationControl =\nAnimationControl_\nForward;
-elseif (AnimationControl_\nReset) then (yes)
+elseif (Pixel_\nanimationControl) then (AnimationControl_\nReset)
  #Aqua:Pixel_\nFrameState =\nFrameState_\nUpdate;
  :Pixel_\nclearAnimations|
  :Pixel_\nclearPixels|
  #Turquoise:Pixel_\nanimationControl =\nAnimationControl_\nForward;
  #Pink:Pixel_\ninitializeStartAnimations|
-elseif (AnimationControl_\nWipePause) then (yes)
+elseif (Pixel_\nanimationControl) then (AnimationControl_\nWipePause)
  #Turquoise:Pixel_\nanimationControl =\nAnimationControl_\nPause;
  :Pixel_\nclearPixels|
  (D)
  detach
-elseif (AnimationControl_\nClear) then (yes)
+elseif (Pixel_\nanimationControl) then (AnimationControl_\nClear)
  #Aqua:Pixel_\nFrameState =\nFrameState_\nUpdate;
  :Pixel_\nclearPixels|
-else (no)
+else
  #Aqua:Pixel_\nFrameState =\nFrameState_\nPause;
  (F)
  detach
 endif
 :Process Pixel_testMode;
-:Pixel_stackProcess|
+#Pink:Pixel_stackProcess|
 if (Pixel_\nanimationControl) then (AnimationControl_\nForwardOne)
  #Turquoise:Pixel_\nanimationControl =\nAnimationControl_\nPause;
 endif

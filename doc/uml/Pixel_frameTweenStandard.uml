@@ -1,0 +1,14 @@
+'
+' Pixel_frameTweenStandard.uml
+'
+
+@startuml
+title Pixel_frameTweenStandard()
+start
+if (elem->pfunc) then (PixelPixelFunction_\nPointInterpolation)
+ :Pixel_pixelTweenInterpolation\n( data, elem )|
+elseif (elem->pfunc) then (PixelPixelFunction_Off or\nPixelPixelFunction_\nPointInterpolationKLL)
+ :Pixel_pixelTweenStandard\n( data, elem )|
+endif
+stop
+@enduml

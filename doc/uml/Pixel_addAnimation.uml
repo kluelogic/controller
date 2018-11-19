@@ -1,0 +1,11 @@
+'
+' Pixel_addAnimation.uml
+'
+
+@startuml
+title Pixel_addAnimation()
+start
+:Pixel_AnimationStack.stack[ Pixel_AnimationStack.size++ ] =\n&Pixel_AnimationElement_Stor[ pos ];
+:memcpy( &Pixel_AnimationElement_Stor[ pos ], elem );
+stop
+@enduml

@@ -5,8 +5,13 @@
 @startuml
 title Pixel_initializeStartAnimations()
 start
+ floating note left: for each Pixel_AnimationSettings\nadd it to default animation\nif PlayState is Start
  while (index) is (< Pixel_AnimationSettingsNum_KLL)
-  #Pink:Pixel_addDefaultAnimation(index)|
+  if (Pixel_AnimationSettings[ index ].state) then (AnimationPlayState_Start)
+   if (Pixel_AnimationSettings[ index ].trigger) then (1)
+    #Pink:Pixel_addDefaultAnimation( index )|
+   endif
+  endif
  endwhile
 stop
 @enduml

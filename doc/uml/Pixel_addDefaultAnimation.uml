@@ -5,6 +5,7 @@
 @startuml
 title Pixel_addDefaultAnimation()
 start
-:Pixel_addAnimation(&Pixel_AnimationSettings[ index ])|
+:elem = Pixel_AnimationSettings[ index ];
+#Pink:Pixel_addAnimation( &elem )|
 stop
 @enduml

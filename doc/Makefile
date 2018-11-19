@@ -5,10 +5,13 @@
 .PHONY: html uml
 
 help:
-	@echo "make [html|uml]"
+	@echo "make [doxygen|uml|grip]"
 
-html:
+doxygen:
 	doxygen
 
 uml:
 	java -jar ~/Downloads/plantuml.jar ./uml/*.uml
+
+grip:
+	grip KLUELOGIC_ERGODOX.md

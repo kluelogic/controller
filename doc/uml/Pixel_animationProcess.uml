@@ -1,0 +1,15 @@
+'
+' Pixel_animationProcess.uml
+'
+
+@startuml
+title Pixel_animationProcess()
+start
+:data = Pixel_Animations[ elem->index ][ elem->pos ];
+if (elem->ffunc) then (PixelFrameFunction_\nInterpolation)
+ :Pixel_frameTweenInterpolation\n( data, elem )|
+elseif (elem->ffunc) then (PixelFrameFunction_Off or\nPixelFrameFunction_\nInterpolationKLL)
+ #Pink:Pixel_frameTweenStandard\n( data, elem )|
+endif
+stop
+@enduml
