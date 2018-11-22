@@ -10,25 +10,25 @@ if (Pixel_FrameState) then (neither FrameState_Update\nnor FrameState_Pause)
  (F)
  detach
 endif
-if (Pixel_\nanimationControl) then (AnimationControl_\nForward or\nAnimationControl_\nForwardOne)
+if (Pixel_\nanimationControl) then (Animation\nControl_\nForward or\nForwardOne)
  #Aqua:Pixel_\nFrameState =\nFrameState_\nUpdate;
-elseif (Pixel_\nanimationControl) then (AnimationControl_\nStop)
+elseif (Pixel_\nanimationControl) then (Animation\nControl_\nStop)
  #Aqua:Pixel_\nFrameState =\nFrameState_\nUpdate;
  :Pixel_\nclearAnimations|
  :Pixel_\nclearPixels|
  #Turquoise:Pixel_\nanimationControl =\nAnimationControl_\nForward;
-elseif (Pixel_\nanimationControl) then (AnimationControl_\nReset)
+elseif (Pixel_\nanimationControl) then (Animation\nControl_\nReset)
  #Aqua:Pixel_\nFrameState =\nFrameState_\nUpdate;
  :Pixel_\nclearAnimations|
  :Pixel_\nclearPixels|
  #Turquoise:Pixel_\nanimationControl =\nAnimationControl_\nForward;
  #Pink:Pixel_\ninitializeStartAnimations|
-elseif (Pixel_\nanimationControl) then (AnimationControl_\nWipePause)
+elseif (Pixel_\nanimationControl) then (Animation\nControl_\nWipePause)
  #Turquoise:Pixel_\nanimationControl =\nAnimationControl_\nPause;
  :Pixel_\nclearPixels|
  (D)
  detach
-elseif (Pixel_\nanimationControl) then (AnimationControl_\nClear)
+elseif (Pixel_\nanimationControl) then (Animation\nControl_\nClear)
  #Aqua:Pixel_\nFrameState =\nFrameState_\nUpdate;
  :Pixel_\nclearPixels|
 else

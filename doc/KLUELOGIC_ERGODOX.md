@@ -320,6 +320,21 @@ typedef enum PixelChange {
   PixelChange_LeftShift,       // <<
   PixelChange_RightShift,      // >>
 } PixelChange;
+
+typedef struct PixelRect {
+  int16_t col;
+  int16_t row;
+} PixelRect;
+
+typedef struct PixelModElement {
+  PixelAddressType type; // Address type
+  union {
+    PixelRect rect; // Rectangle lookup for column, row and row vs. col
+    int32_t  index; // Index lookup for direct and scancode lookups
+  };
+  uint8_t data[0]; // Data size depends on PixelElement definition
+                   // ( PixelElement.width / 8 + sizeof(PixelChange) ) * PixelElement.channels
+} __attribute__((packed)) PixelModElement;
 ```
 
 ### Constants

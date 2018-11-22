@@ -6,9 +6,9 @@
 title Pixel_frameTweenStandard()
 start
 if (elem->pfunc) then (PixelPixelFunction_\nPointInterpolation)
- :Pixel_pixelTweenInterpolation\n( data, elem )|
+ :Pixel_pixelTween\nInterpolation( data, elem )|
 elseif (elem->pfunc) then (PixelPixelFunction_Off or\nPixelPixelFunction_\nPointInterpolationKLL)
- :Pixel_pixelTweenStandard\n( data, elem )|
+ #Pink:Pixel_pixelTween\nStandard( data, elem )|
 endif
 stop
 @enduml
