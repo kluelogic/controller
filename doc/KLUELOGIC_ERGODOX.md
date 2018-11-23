@@ -113,6 +113,9 @@ sudo ./load
 ### Pixel Mapping (`Scan/Infinity_Ergodox/scancode_map.kll`)
 ![pixel_map](images/pixel_map.png)
 
+### Pixel Row/Column
+![pixel_rowcol](images/pixel_rowcol.png)
+
 ### Key Positioning (`Scan/Infinity_Ergodox/leftHand.kll` and `rightHand.kll`)
 ![key_pos](images/key_pos.png)
 
@@ -374,6 +377,9 @@ const uint8_t <NAME>_frame1[] = {
   PixelAddressType_End
 };
 ```
+
+### Examples
+#### `kll/kll/layouts/animation_test.kll`
 
 ### Pixel (`Macro/PixelMap/pixel.c`)
 ![Pixel_setup](uml/Pixel_setup.png)
