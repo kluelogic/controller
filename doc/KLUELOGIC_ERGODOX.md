@@ -83,6 +83,14 @@ sudo ./load
 # click the reset button in the back
 ```
 
+### Debug
+[Debugging](https://github.com/kiibohd/controller/wiki/Debugging)
+```bash
+sudo screen -L /dev/ttyACM0 # -L for logging
+: help
+# to exit screen; Ctrl-A k y
+```
+
 ![build](uml/build.png)
 
 <!-------------------------------------------------------------------------------->
@@ -123,10 +131,11 @@ sudo ./load
 ![usb_code](images/usb_code.png)
 
 ### Layer 0 (`kll/kll/layouts/infinity_ergodox/my_layer0.kll`)
-Deviation from the original ErgoDox layout is shown in _**bold italic**_.
+Deviation from the original ErgoDox layout is shown in **bold**.
 
-![layer0](images/layer0.png)
+![layer0](images/my_layer0.png)
 
+<!---
 ### Layer 1 (`kll/kll/layouts/infinity_ergodox/my_layer1.kll`)
 This layer pulls in the overflowed keys of layer 0. Deviation from the original ErgoDox layout is shown in _**bold italic**_.
 
@@ -138,6 +147,81 @@ NOTE: **List all keys in relation to the original ErgoDox layout**, not in relat
 This layer is for register programming. A key press increments the value of corresponding register.
 
 ![layer2](images/layer2.png)
+--->
+
+### Layout of Happy Hacking Keyboard
+![hhkb](images/hhkb.png)
+
+<!-------------------------------------------------------------------------------->
+## Trigger/Result
+<!-------------------------------------------------------------------------------->
+
+#### `Keyboards/linux-gnu.ICED-L.gcc.ninja/generatedKeymap.h`
+```C
+// Trigger Macro Guides
+
+Guide_TM( 0 ) = {                          // --> const uint8_t tm0_guide[] = { ...
+  1,                                       // combo length 
+  TriggerType_Animation1,                  // type                   \
+  ScheduleType_Repeat | ScheduleType_Done, // state                   } TriggerGuide
+  0x01,                                    // scanCode (A[yokonami]) /
+  0 };                                     // 0: short sequence
+// ...
+Guide_TM( 19 ) = {     // --> const uint8_t tm19_guide[] = { ...
+  1,                   // combo length 
+  TriggerType_Switch1, // type            \
+  ScheduleType_Gen,    // state            } TriggerGuide
+  0x1A,                // scanCode (S026) /
+  0 };                 // 0: short sequence
+// ...
+
+// Indexed Table of Trigger Macros
+
+const TriggerMacro TriggerMacroList[] = { //                              guide, result
+  Define_TM(  0, 0 ), // (A[yokonami]) : (A[yokojima](start)); --> {  tm0_guide, 0 },
+  // ...
+  Define_TM( 19, 3 ), // (S026) : (HID(USBCode,default)"4"A);  --> { tm19_guide, 3 },
+  Define_TM( 19, 1 ), // (S026) : (A[yokonami](start));        --> { tm19_guide, 1 },
+  // ...
+};
+
+// Result Macro Guides
+
+Guide_RM( 0 ) = { 1, 23, 2, 0, 0 };    // (A[yokojima](start))       --> const uint8_t rm0_guide[] = { 1, 23, 2, 0, 0 };
+Guide_RM( 1 ) = { 1, 23, 3, 0, 0 };    // (A[yokonami](start))       --> const uint8_t rm1_guide[] = { 1, 23, 3, 0, 0 };
+Guide_RM( 2 ) = { 1, 19, 0x00,    0 }; // (None)                     --> const uint8_t rm2_guide[] = { 1, 19, 0x00, 0 };
+Guide_RM( 3 ) = { 1, 19, KEY_A_4, 0 }; // (HID(USBCode,default)"4"A) --> const uint8_t rm3_guide[] = { 1, 19, KEY_A_4, 0 };
+// ...
+
+// Indexed Table of Result Macros
+
+const ResultMacro ResultMacroList[] = {
+  Define_RM( 0 ), // (A[yokojima](start))       --> { rm0_guide },
+  Define_RM( 1 ), // (A[yokonami](start))       --> { rm1_guide },
+  Define_RM( 2 ), // (None)                     --> { rm2_guide },
+  Define_RM( 3 ), // (HID(USBCode,default)"4"A) --> { rm3_guide },
+  // ...
+};
+```
+
+### CLI
+#### `macroDebug`
+```bash
+Sw        P    0:26 # TriggerType_Switch1    Pressed  type:index
+Sw        H    0:26 # TriggerType_Switch1    Held     type:index
+Sw        R    0:26 # TriggerType_Switch1    Released type:index
+Active    P    20:0 # TriggerType_Active1    Pressed  type:index
+Inactive  P    19:0 # TriggerType_Inactive1  Pressed  type:index
+Animation Done 13:1 # TriggerType_Animation1 Done     type:index
+```
+
+#### `voteDebug`
+```bash
+sV:P  TriggerMacroList[20] DR _   # shortMacro TriggerMacroVote_Pass           TriggerMacroEval_DoResult
+sV:PR TriggerMacroList[20] DR _   # shortMacro TriggerMacroVote_PassRelease    TriggerMacroEval_DoResult
+sV:R  TriggerMacroList[20] DRaR R # shortMacro TriggerMacroVote_Release        TriggerMacroEval_DoResultAndRemove/Remove
+sV:FN TriggerMacroList[0]  R      # shortMacro TriggerMacroVote_Fail/DoNothing TriggerMacroEval_Remove
+```
 
 <!-------------------------------------------------------------------------------->
 ## LED

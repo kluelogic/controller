@@ -70,14 +70,16 @@ Scan Code to USB Code
 Key Positioning
 ]
 
-component all_leds_kll #Gray [
+component all_leds_kll #lightBlue [
 <b>DefaultMap #1
 
 kll/
 kll/
 layouts/
 infinity_ergodox/
-all-leds.kll
+<b>my_led.kll
+---
+LED Animations
 ]
 
 'component mdergo1Overlay_kll [

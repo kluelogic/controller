@@ -25,7 +25,7 @@ BaseMap="scancode_map leftHand slave1 rightHand"
 # NOTE: To combine kll files into a single layout, separate them by spaces
 # e.g.  DefaultMap="mylayout mylayoutmod"
 #DefaultMap="infinity_ergodox/all-leds infinity_ergodox/mdergo1Overlay infinity_ergodox/lcdFuncMap"
-DefaultMap="infinity_ergodox/my_led infinity_ergodox/my_layer0 infinity_ergodox/lcdFuncMap"
+DefaultMap="infinity_ergodox/lcdFuncMap infinity_ergodox/my_layer0 infinity_ergodox/my_led"
 
 # This is where you set the additional layers
 # NOTE: Indexing starts at 1
@@ -35,7 +35,7 @@ DefaultMap="infinity_ergodox/my_led infinity_ergodox/my_layer0 infinity_ergodox/
 #       PartialMaps[3]="layer3"
 #PartialMaps[1]="infinity_ergodox/iced_func"
 #PartialMaps[2]="infinity_ergodox/iced_numpad"
-PartialMaps[1]="infinity_ergodox/my_layer1"
+#PartialMaps[1]="infinity_ergodox/my_layer1"
 #PartialMaps[2]="infinity_ergodox/my_layer2"
 
 # REVISIT source my_ergodox.bash
