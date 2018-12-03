@@ -1,0 +1,19 @@
+'
+' LCD_setup.uml
+'
+
+@startuml
+title LCD_setup()
+start
+:CLI_registerDictionary|
+:SPI_setup|
+:LCD_initialize|
+while (page) is (< LCD_TOTAL_VISIBLE_PAGES)
+ :LCD_writeDisplayReg\n(&STLcdDefaultImage)|
+ note left
+  write default
+  image to LCD
+ end note
+endwhile
+stop
+@enduml

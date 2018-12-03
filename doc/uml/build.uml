@@ -70,56 +70,58 @@ Scan Code to USB Code
 Key Positioning
 ]
 
-component all_leds_kll #lightBlue [
-<b>DefaultMap #1
-
-kll/
-kll/
-layouts/
-infinity_ergodox/
-<b>my_led.kll
----
-LED Animations
-]
-
 'component mdergo1Overlay_kll [
 '<b>DefaultMap #1
 '
-'kll/
-'kll/
-'layouts/
+'kll/kll/layouts/
 'infinity_ergodox/
 'mdergo1Overlay.kll
 ']
 
 component my_layer0_kll #LightBlue [
-<b>DefaultMap #2
+<b>DefaultMap #1
 
-kll/
-kll/
-layouts/
+kll/kll/layouts/
 infinity_ergodox/
 <b>my_layer0.kll
 ---
 Layer-0 Key Mapping
 ]
 
-component lcdFuncMap_kll #Gray [
+component all_led_kll #lightBlue [
+<b>DefaultMap #2
+
+kll/kll/layouts/
+infinity_ergodox/
+<b>my_led.kll
+---
+LED Animations
+]
+
+component all_lcd_kll #lightBlue [
 <b>DefaultMap #3
 
-kll/
-kll/
-layouts/
+kll/kll/layouts/
+infinity_ergodox/
+<b>my_lcd.kll
+---
+LCD Definitions
+]
+
+component lcdFuncMap_kll [
+<b>DefaultMap #4
+
+kll/kll/layouts/
 infinity_ergodox/
 lcdFuncMap.kll
+---
+STLcdNumber0, etc.
 ]
 
 'component iced_func_kll #Gray [
 '<b>PartialMaps<1>
 '
-'kll/
-'kll/
-'layouts/
+'kll/kll/layouts/
 'infinity_ergodox/
 'iced_func.kll
 ']
@@ -127,9 +129,7 @@ lcdFuncMap.kll
 'component iced_numpad_kll #Gray [
 '<b>PartialMaps<2>
 '
-'kll/
-'kll/
-'layouts/
+'kll/kll/layouts/
 'infinity_ergodox/
 'iced_numpad.kll
 '---
@@ -139,9 +139,7 @@ lcdFuncMap.kll
 component my_layer1_kll #LightBlue [
 <b>PartialMaps<1>
 
-kll/
-kll/
-layouts/
+kll/kll/layouts/
 infinity_ergodox/
 <b>my_layer1.kll
 ---
@@ -151,9 +149,7 @@ Layer-1 Key Mapping
 component my_layer2_kll #LightBlue [
 <b>PartialMaps<2>
 
-kll/
-kll/
-layouts/
+kll/kll/layouts/
 infinity_ergodox/
 <b>my_layer2.kll
 ---
@@ -182,9 +178,10 @@ scancode_map_kll     --* ergodox_l_bash
 leftHand_kll         --* ergodox_l_bash
 slave1_kll           --* ergodox_l_bash
 rightHand_kll        --* ergodox_l_bash
-all_leds_kll          -* ergodox_l_bash
 'mdergo1Overlay_kll   -* ergodox_l_bash
 my_layer0_kll         -* ergodox_l_bash
+all_led_kll           -* ergodox_l_bash
+all_lcd_kll           -* ergodox_l_bash
 lcdFuncMap_kll        -* ergodox_l_bash
 'iced_numpad_kll -right-* ergodox_l_bash
 'iced_func_kll   -right-* ergodox_l_bash

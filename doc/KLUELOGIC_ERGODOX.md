@@ -86,24 +86,12 @@ sudo ./load
 ### Debug
 [Debugging](https://github.com/kiibohd/controller/wiki/Debugging)
 ```bash
-sudo screen -L /dev/ttyACM0 # -L for logging
+sudo screen -L /dev/ttyACM0 # -L for logging to screenlog.0
 : help
 # to exit screen; Ctrl-A k y
 ```
 
 ![build](uml/build.png)
-
-<!-------------------------------------------------------------------------------->
-## Firmware
-<!-------------------------------------------------------------------------------->
-
-### Main function (`main.c`)
-![main](uml/main.png)
-![main_periodic](uml/main_periodic.png)
-
-### Scan loop (`Scan/Infinity_Ergodox/scan_loop.c`)
-![Scan_setup](uml/Scan_setup.png)
-![Scan_poll](uml/Scan_poll.png)
 
 <!-------------------------------------------------------------------------------->
 ## Keyboard Layout
@@ -151,6 +139,36 @@ This layer is for register programming. A key press increments the value of corr
 
 ### Layout of Happy Hacking Keyboard
 ![hhkb](images/hhkb.png)
+
+### Function Keys
+| `leftHand.kll`       | `rightHand.kll`      | `my_layer0.kll`               | `my_led.kll`       | `lcdFuncMap.kll`           |
+| -------------------- | -------------------- | ----------------------------- | ------------------ | -------------------------- |
+| `S45 : U"LGui"`      |                      | `U"LGui" : U"Function1"`      | `U"LGui"     : A[yokojima](start)` |            |
+| `S44 : U"Backtick"`  |                      | `U"Backtick" : U"Function2"`  | `U"Backtick" : A[tatejima](start)` |            |
+| `S43 : U"Function3"` |            | | `U"Function3" : A[snake](start)`    | `U"Function3" :: layerShift(3)+LCDLayerDisplay()` |
+| `S42 : U"Function4"` |            | | `U"Function4" : A[yokonami](start)` | `U"Function4" :: layerShift(4)+LCDLayerDisplay()` |
+| `S41 : U"Function5"` |                      |                           | | `U"Function5" :: layerShift(5)+LCDLayerDisplay()` |
+|                      | `S41 : U"Left"`      | `U"Left"     : U"Function6"`  |                    |                            |
+|                      | `S42 : U"Down"`      | `U"Down"     : U"Function7"`  |                    |                            |
+|                      | `S43 : U"Up"`        | `U"Up"       : U"Function8"`  |                    |                            |
+|                      | `S44 : U"Right"`     | `U"Right"    : U"Function9"`  |                    |                            |
+|                      | `S45 : U"RGui"`      | `U"RGui"     : U"Function10"` |                    |                            |
+| `S12 : U"Function1"` |                   | `U"Function1" : '-'`         | | `U"Function1" :: layerShift(1)+LCDLayerDisplay()` |
+| `S30 : U"Function2"` |                   | `U"Function2" : U"Backtick"` | | `U"Function2" :: layerShift(2)+LCDLayerDisplay()` |
+|                      | `S3  : U"Function6"` | `U"Function6" : None`     | | `U"Function6" :: layerShift(6)+LCDLayerDisplay()` |
+|                      | `S30 : U"Function7"` | `U"Function7" : U"Quote"` | | `U"Function7" :: layerShift(7)+LCDLayerDisplay()` |
+
+<!-------------------------------------------------------------------------------->
+## Firmware
+<!-------------------------------------------------------------------------------->
+
+### Main function (`main.c`)
+![main](uml/main.png)
+![main_periodic](uml/main_periodic.png)
+
+### Scan loop (`Scan/Infinity_Ergodox/scan_loop.c`)
+![Scan_setup](uml/Scan_setup.png)
+![Scan_poll](uml/Scan_poll.png)
 
 <!-------------------------------------------------------------------------------->
 ## Trigger/Result
@@ -311,6 +329,36 @@ void LED_zeroPages( uint8_t bus, uint8_t addr, uint8_t startPage, uint8_t numPag
 <!-------------------------------------------------------------------------------->
 ## LCD
 <!-------------------------------------------------------------------------------->
+
+### KLL
+
+#### `Scan/Infinity_Ergodox/scancode_map.kll`
+```C
+STLcdDefaultImage = "...";
+```
+
+### Macros
+
+#### `Scan/Devices/STLcd/lcd_scan.c`
+```C
+#define LCD_TOTAL_VISIBLE_PAGES 4
+```
+
+<!--
+#### `Keyboards/linux-gnu.ICED-L.gcc.ninja/kll_defs.h`
+```C
+#define STLcdDefaultImage_define ...
+```
+
+### Constants
+#### `Scan/Devices/STLcd/lcd_scan.c`
+```C
+const uint8_t STLcdDefaultImage[] = { STLcdDefaultImage_define };
+```
+-->
+
+### LCD scan (`Scan/Devices/STLcd/lcd_scan.c`)
+![LCD_setup](uml/LCD_setup.png)
 
 <!-------------------------------------------------------------------------------->
 ## Pixel
