@@ -12,6 +12,16 @@ animation => Pixel_Animation_capability( index : 2, loops : 1, pfunc : 1, divmas
 animationIndex => Pixel_AnimationIndex_capability( settingindex : 2 );
 pixel => Pixel_Pixel_capability();
 
+# Gamma Correction
+# 0 - Disabled
+# 1 - Enabled
+# 2 - Toggle
+# See: https://github.com/kiibohd/controller/issues/255 for details
+gamma => Pixel_GammaControl_capability( func : 1 );
+LEDGamma = 2.2;
+gamma_enabled => Pixel_gamma_default_define;
+gamma_enabled = "0"; # 0 - Disabled, 1 - Enabled
+
 # Animation Control
 # 0 - Pause/Resume
 # 1 - ForwardOne

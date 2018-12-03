@@ -11,6 +11,41 @@ COLOR_GREEN="\e[1;92m"
 COLOR_YELLOW="\e[1;93m"
 COLOR_CYAN="\e[1;96m"
 COLOR_NORMAL="\e[0m"
+EnableSaniziter=${EnableSaniziter:-false}
+
+# Sanitizer lookup
+if $TRAVIS; then
+	if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+		EnableSaniziter=false
+		echo "macOS builds on Travis-CI don't seem to like the DYLD_INSERT_LIBRARIES preload, disabling sanitization."
+	fi
+fi
+if $EnableSaniziter; then
+	case "$OSTYPE" in
+	# Linux
+	"linux-gnu")
+		# TODO (HaaTa) This may not work using clang as the compiler (but it may work ok)
+		# It's still recommended to have llvm installed to show backtrace
+		# Leak sanitizer is finding leaks in Python, these are likely bugs but the code we are
+		# testing doesn't actually malloc so it's not a big deal.
+		ASAN_LIB=$(ldconfig -v 2> /dev/null | grep libasan.so | cut -d' ' -f1 | head -1 | xargs)
+		UBSAN_LIB=$(ldconfig -v 2> /dev/null | grep libubsan.so | cut -d' ' -f1 | head -1 | xargs)
+		export ASAN_OPTIONS=detect_leaks=0
+		export LD_PRELOAD=${ASAN_LIB}:${UBSAN_LIB}
+		echo "ASAN_OPTIONS -> ${ASAN_OPTIONS}"
+		echo "LD_PRELOAD -> ${LD_PRELOAD}"
+		;;
+	# macOS
+	"darwin"*)
+		# TODO (HaaTa) This may possibly point to the wrong clang
+		#              It would be better to get this path directly from CMake
+		# This says gcc, but on Darwin, it's actually clang
+		# (specifying clang seems to have problems)
+		export DYLD_INSERT_LIBRARIES=$(gcc -print-resource-dir)/lib/darwin/libclang_rt.asan_osx_dynamic.dylib
+		echo "DYLD_INSERT_LIBRARIES -> ${DYLD_INSERT_LIBRARIES}"
+		;;
+	esac
+fi
 
 # Results
 result() {

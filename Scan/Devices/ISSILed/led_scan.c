@@ -573,8 +573,11 @@ void LED_reset()
 		uint8_t bus = LED_ChannelMapping[ ch ].bus;
 
 #if ISSI_Chip_31FL3733_define == 1
-		// Enable master sync for the first chip and disable software shutdown
-		if ( ch == 0 )
+		// Enable master sync for the last chip and disable software shutdown
+		// XXX (HaaTa); The last chip is used as it is the last chip all of the frame data is sent to
+		// This is imporant as it may take more time to send the packet than the ISSI chip can handle
+		// between frames.
+		if ( ch == ISSI_Chips_define - 1 )
 		{
 			LED_writeReg( bus, addr, 0x00, 0x41, ISSI_ConfigPage );
 		}
@@ -1065,20 +1068,22 @@ void LED_control( LedControl control, uint8_t arg )
 		return;
 
 	case LedControl_set_fps:
-		LED_displayFPS = (uint32_t)arg;
+		LED_framerate = (uint32_t)arg;
 		return;
 
 	case LedControl_increase_fps:
-		if ( LED_displayFPS < 0xFF )
+		if ( LED_framerate < 0xFF )
 		{
-			LED_displayFPS += arg;
+			// Smaller timeout, higher FPS
+			LED_framerate -= arg;
 		}
 		return;
 
 	case LedControl_decrease_fps:
-		if ( LED_displayFPS > 1 )
+		if ( LED_framerate > 1 )
 		{
-			LED_displayFPS -= arg;
+			// Higher timeout, lower FPS
+			LED_framerate += arg;
 		}
 		return;
 	}
