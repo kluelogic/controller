@@ -35,7 +35,7 @@ DefaultMap="infinity_ergodox/my_layer0 infinity_ergodox/my_led infinity_ergodox/
 #       PartialMaps[3]="layer3"
 #PartialMaps[1]="infinity_ergodox/iced_func"
 #PartialMaps[2]="infinity_ergodox/iced_numpad"
-PartialMaps[1]="infinity_ergodox/my_layer1"
+#PartialMaps[1]="infinity_ergodox/my_layer1"
 #PartialMaps[2]="infinity_ergodox/my_layer2"
 
 # REVISIT source my_ergodox.bash
